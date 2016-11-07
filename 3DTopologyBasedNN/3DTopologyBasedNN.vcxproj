@@ -96,7 +96,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
-      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -145,17 +145,29 @@
     <Text Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Edge.h" />
-    <ClInclude Include="Node.h" />
-    <ClInclude Include="Signal.h" />
+    <ClInclude Include="3DNN\Edge.h" />
+    <ClInclude Include="3DNN\Network.h" />
+    <ClInclude Include="3DNN\Node.h" />
+    <ClInclude Include="3DNN\Signal.h" />
+    <ClInclude Include="NEAT\Experiment.h" />
+    <ClInclude Include="NEAT\Gene.h" />
+    <ClInclude Include="NEAT\Genome.h" />
+    <ClInclude Include="NEAT\Pool.h" />
+    <ClInclude Include="NEAT\Species.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="3DNN\Network.cpp" />
     <ClCompile Include="3DTopologyBasedNN.cpp" />
-    <ClCompile Include="Edge.cpp" />
-    <ClCompile Include="Node.cpp" />
-    <ClCompile Include="Signal.cpp" />
+    <ClCompile Include="3DNN\Edge.cpp" />
+    <ClCompile Include="3DNN\Node.cpp" />
+    <ClCompile Include="3DNN\Signal.cpp" />
+    <ClCompile Include="NEAT\Experiment.cpp" />
+    <ClCompile Include="NEAT\Gene.cpp" />
+    <ClCompile Include="NEAT\Genome.cpp" />
+    <ClCompile Include="NEAT\Pool.cpp" />
+    <ClCompile Include="NEAT\Species.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
