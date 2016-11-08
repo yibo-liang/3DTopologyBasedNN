@@ -56,7 +56,7 @@ void Experiment::init(int input_n, int output_n)
 	for (int i = 0; i < this->pool_size; i++) {
 		Pool npool;
 		for (int j = 0; j < this->pool_population; j++) {
-			Genome ngenome=basicGenome(this->input_n);
+			Genome* ngenome=basicGenome(this->input_n);
 			npool.addToSpecies(ngenome);
 		}
 		npool.innovation = 1;

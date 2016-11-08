@@ -152,6 +152,7 @@
     <ClInclude Include="NEAT\Experiment.h" />
     <ClInclude Include="NEAT\Gene.h" />
     <ClInclude Include="NEAT\Genome.h" />
+    <ClInclude Include="NEAT\NeuronsConfiguration.h" />
     <ClInclude Include="NEAT\Pool.h" />
     <ClInclude Include="NEAT\Species.h" />
     <ClInclude Include="stdafx.h" />

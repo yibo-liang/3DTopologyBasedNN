@@ -10,6 +10,7 @@
 class Pool
 {
 public:
+	//list of species, remember to delete every single of them when distructing
 	list<Species> species;
 	int generation;
 	int innovation;
@@ -17,7 +18,7 @@ public:
 	Pool();
 	~Pool();
 
-	void addToSpecies(Genome genome);
+	void addToSpecies(Genome* genome);
 private:
 
 };

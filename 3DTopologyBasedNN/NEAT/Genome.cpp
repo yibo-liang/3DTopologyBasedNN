@@ -124,8 +124,8 @@ Genome::~Genome()
 {
 }
 
-Genome basicGenome(int max_neuron) {
-	Genome g;
-	g.max_neuron = max_neuron;
+Genome* basicGenome(int max_neuron) {
+	Genome* g= new Genome();
+	g->max_neuron = max_neuron;
 	return g;
 }

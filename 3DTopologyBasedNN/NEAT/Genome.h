@@ -19,6 +19,9 @@ public:
 	double fitness;
 	double adjusted_fitness;
 	Network network;
+
+	int input_n;
+	int output_n;
 	int max_neuron;
 	
 	double disjointCompare(Genome g1, Genome g2);
@@ -32,11 +35,13 @@ public:
 	Genome();
 	~Genome();
 
+	Network toNeuralNetwork();
+
 private:
 
 };
 
-Genome basicGenome(int max_neuron);
+Genome* basicGenome(int max_neuron);
 Genome fromMutate(Genome g, map<string, double> probabilities);
 Genome fromCrossOver(Genome g1, Genome g2, map<string, double> probabilities);
 #endif // !GENOME
