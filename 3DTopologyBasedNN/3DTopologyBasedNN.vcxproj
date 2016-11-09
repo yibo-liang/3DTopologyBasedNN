@@ -23,6 +23,7 @@
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>My3DTopologyBasedNN</RootNamespace>
     <WindowsTargetPlatformVersion>8.1</WindowsTargetPlatformVersion>
+    <ProjectName>TSTBasedNN</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -145,10 +146,10 @@
     <Text Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="3DNN\Edge.h" />
-    <ClInclude Include="3DNN\Network.h" />
-    <ClInclude Include="3DNN\Node.h" />
-    <ClInclude Include="3DNN\Signal.h" />
+    <ClInclude Include="NN\Edge.h" />
+    <ClInclude Include="NN\Network.h" />
+    <ClInclude Include="NN\Node.h" />
+    <ClInclude Include="NN\Signal.h" />
     <ClInclude Include="NEAT\Experiment.h" />
     <ClInclude Include="NEAT\Gene.h" />
     <ClInclude Include="NEAT\Genome.h" />
@@ -159,11 +160,11 @@
     <ClInclude Include="targetver.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="3DNN\Network.cpp" />
-    <ClCompile Include="3DTopologyBasedNN.cpp" />
-    <ClCompile Include="3DNN\Edge.cpp" />
-    <ClCompile Include="3DNN\Node.cpp" />
-    <ClCompile Include="3DNN\Signal.cpp" />
+    <ClCompile Include="NN\Network.cpp" />
+    <ClCompile Include="TSTBasedNN.cpp" />
+    <ClCompile Include="NN\Edge.cpp" />
+    <ClCompile Include="NN\Node.cpp" />
+    <ClCompile Include="NN\Signal.cpp" />
     <ClCompile Include="NEAT\Experiment.cpp" />
     <ClCompile Include="NEAT\Gene.cpp" />
     <ClCompile Include="NEAT\Genome.cpp" />

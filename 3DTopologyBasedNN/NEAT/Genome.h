@@ -5,7 +5,7 @@
 
 #include "Gene.h"
 #include <map>
-#include "../3DNN/Network.h"
+#include "../NN/Network.h"
 
 using namespace std;
 
