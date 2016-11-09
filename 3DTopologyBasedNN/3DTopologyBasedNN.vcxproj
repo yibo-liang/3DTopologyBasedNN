@@ -146,6 +146,7 @@
     <Text Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="NEAT\Configuration.h" />
     <ClInclude Include="NN\Edge.h" />
     <ClInclude Include="NN\Network.h" />
     <ClInclude Include="NN\Node.h" />
@@ -160,6 +161,7 @@
     <ClInclude Include="targetver.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="NEAT\Configuration.cpp" />
     <ClCompile Include="NN\Network.cpp" />
     <ClCompile Include="TSTBasedNN.cpp" />
     <ClCompile Include="NN\Edge.cpp" />

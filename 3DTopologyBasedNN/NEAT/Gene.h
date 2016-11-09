@@ -3,6 +3,10 @@
 #ifndef GENE
 #define GENE
 
+#include <vector>
+
+using namespace std;
+
 class Gene
 {
 public:
@@ -15,9 +19,10 @@ public:
 	double weight;
 
 
-	//offset for 3D Topology NN 
-	double offset_x, offset_y, offset_z; //offset of position in 3 dimensional space for out node,
-
+	//offset for node Time-Space Topology Based NN 
+	
+	vector<double> offset_vector;
+	
 	Gene copy();
 
 	Gene();

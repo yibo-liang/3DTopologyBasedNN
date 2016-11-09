@@ -9,7 +9,7 @@
 
 using namespace std;
 
-
+//Experiment for genetic algorithm 
 
 class Experiment
 {
@@ -17,11 +17,8 @@ public:
 
 	//NEAT experiment class
 	//experiment configuration
-	int pool_size;
-	int pool_population;
+	Configuration configuration;
 	
-	int input_n;
-	int output_n;
 
 	map<string, double> probabilities; //probabilities for mutations
 
@@ -38,22 +35,22 @@ public:
 
 	
 
-
 	Experiment();
-
-	Experiment(int pool_size, int pool_population);
-
-	Experiment(int pool_size, int pool_population, map<string, double> probabilities);
+	Experiment(Configuration config);
 
 	~Experiment();
 
-	void init(int input_n, int output_n);
+	void init();
+
+	Network generateNeuralNetwork(Genome genome);
+
 
 private:
 
 
 
 };
+
 
 
 #endif // !EXPERIMENT

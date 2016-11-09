@@ -3,6 +3,7 @@
 #ifndef GENOME
 #define GENOME
 
+#include "Configuration.h"
 #include "Gene.h"
 #include <map>
 #include "../NN/Network.h"
@@ -41,7 +42,7 @@ private:
 
 };
 
-Genome* basicGenome(int max_neuron);
+Genome* basicGenome(Configuration config);
 Genome fromMutate(Genome g, map<string, double> probabilities);
 Genome fromCrossOver(Genome g1, Genome g2, map<string, double> probabilities);
 #endif // !GENOME

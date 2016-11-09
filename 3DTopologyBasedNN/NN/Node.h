@@ -5,6 +5,7 @@
 
 #include "Signal.h"
 #include <list>
+#include <vector>
 
 using namespace std;
 
@@ -14,7 +15,9 @@ public:
 
 	int id;
 	
-	double x, y, z;
+	string type;
+
+	vector<double> vec_offset;
 
 	list<int> edges_in;
 	list<int> edges_out;

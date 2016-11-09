@@ -1,7 +1,10 @@
 #include "../stdafx.h"
 
+#include "Configuration.h"
 #include "Genome.h"
+
 #include <iostream>
+#include <vector>
 
 double Genome::disjointCompare(Genome g1, Genome g2)
 {
@@ -73,8 +76,18 @@ double Genome::weightCompare(Genome g1, Genome g2)
 	return sum / coincident;
 }
 
-double distance3d(double x1, double y1, double z1, double x2, double y2, double z2) {
-	return sqrt(pow(x1 - x2, 2) + pow(y1 - y2, 2) + pow(z1 - z2, 2));
+double distance(vector<double> v1, vector<double> v2) {
+	//euclidean distance
+	if (v1.size() == v2.size()) {
+		double sum = 0;
+		for (int i = 0; i < v1.size(); i++) {
+			sum += pow(v1[i]-v2[i], 2);
+		}
+		return sqrt(sum);
+	}
+	else {
+		throw exception("Vector does not match");
+	}
 }
 
 double Genome::dispositionCompare(Genome g1, Genome g2)
@@ -95,7 +108,7 @@ double Genome::dispositionCompare(Genome g1, Genome g2)
 		Gene gene = it->second;
 		if (i2.count(gene.innovation) > 0) {
 			Gene gene2 = i2[gene.innovation];
-			sum = distance3d(gene.offset_x, gene.offset_y, gene.offset_z, gene2.offset_x, gene2.offset_y, gene2.offset_z);
+			sum = distance(gene.offset_vector, gene2.offset_vector);
 			coincident++;
 		}
 	}
@@ -124,8 +137,11 @@ Genome::~Genome()
 {
 }
 
-Genome* basicGenome(int max_neuron) {
+Genome* basicGenome(Configuration config) {
 	Genome* g= new Genome();
-	g->max_neuron = max_neuron;
+
+	g->input_n = config.input_n;
+	g->output_n = config.output_n;
+	g->max_neuron = config.max_neuron;
 	return g;
 }
