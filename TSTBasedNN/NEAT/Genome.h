@@ -6,6 +6,7 @@
 #include "Configuration.h"
 #include "Gene.h"
 #include <map>
+#include <vector>
 #include "../NN/Network.h"
 
 using namespace std;
@@ -15,13 +16,16 @@ using namespace std;
 class Genome
 {
 public:
-	
-	map<int, Gene> genes;
+
+	vector<Gene> genes;
 	double fitness;
 	double adjusted_fitness;
 	Network network;
 
+	Configuration configuration;
+
 	int input_n;
+	int hidden_n;
 	int output_n;
 	int max_neuron;
 	
@@ -33,7 +37,7 @@ public:
 	bool isSameSpecies(Genome another);
 	
 
-	Genome();
+	Genome(Configuration configuration);
 	~Genome();
 
 	Network toNeuralNetwork();
@@ -43,6 +47,10 @@ private:
 };
 
 Genome* basicGenome(Configuration config);
-Genome fromMutate(Genome g, map<string, double> probabilities);
+//mutate method with innovation function
+Genome fromMutate(Genome g, map<string, double> probabilities, int (*inno_func)(int));
 Genome fromCrossOver(Genome g1, Genome g2, map<string, double> probabilities);
+
+
+
 #endif // !GENOME

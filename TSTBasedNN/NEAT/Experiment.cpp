@@ -32,7 +32,6 @@ void Experiment::init()
 			Genome* ngenome=basicGenome(this->configuration);
 			npool.addToSpecies(ngenome);
 		}
-		npool.innovation = 1;
 		this->pools.push_back(npool);
 	}
 }

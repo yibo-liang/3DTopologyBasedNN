@@ -13,13 +13,18 @@ public:
 	//list of species, remember to delete every single of them when distructing
 	list<Species> species;
 	int generation;
-	int innovation;
+	int newInnovation();
+
+	
+
+	void newGeneration();
 
 	Pool();
 	~Pool();
 
 	void addToSpecies(Genome* genome);
 private:
+	int innovation;
 
 };
 

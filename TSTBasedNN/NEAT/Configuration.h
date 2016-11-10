@@ -4,9 +4,18 @@
 #define CONFIG
 
 #include <map>
+#include <list>
 #include <string>
+#include <vector>
 
 using namespace std;
+
+//structure to define preset neurons, such as input neuron 
+//type, activation function, 
+struct preset {
+	int id;
+	vector<double>  offset;
+} ;
 
 class Configuration {
 public:
@@ -18,7 +27,21 @@ public:
 	int space_dimension;
 	int max_neuron;
 
+	int offset_input_neuron_id;
+	int offset_hidden_neuron_id;
+	int offset_output_neuron_id;
+
+	map<int, preset> preset_input;
+	map<int, preset> preset_hidden;
+	map<int, preset> preset_output;
+
 	map<string, double> probabilities;
+
+	bool isBiased;
+
+	double disposition_weight;
+	double disjoint_weight;
+	double dweight_weight;
 
 	Configuration();
 	Configuration(int input_n, int output_n);

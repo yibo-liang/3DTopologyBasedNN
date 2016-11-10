@@ -16,6 +16,7 @@ public:
 	int innovation;
 	int node_in;
 	int node_out;
+	int enabled;
 	double weight;
 
 

@@ -13,12 +13,22 @@ Configuration::Configuration()
 
 	this->max_neuron = 50;
 
+	this->offset_hidden_neuron_id = 10000;
+	this->offset_input_neuron_id = 0;
+	this->offset_output_neuron_id = 20000;
+
 	this->probabilities["link"] = 0.02;
 	this->probabilities["bias"] = 0.02;
 	this->probabilities["node"] = 0.02;
 	this->probabilities["expressing"] = 0.02;
 	this->probabilities["step"] = 0.02;
 	this->probabilities["offset_range"] = 0.02;
+
+	this->isBiased = true;
+
+	this->disjoint_weight = 1 / 3;
+	this->disposition_weight = 1 / 3;
+	this->dweight_weight = 1 / 3;
 }
 
 Configuration::Configuration(int input_n, int output_n)
