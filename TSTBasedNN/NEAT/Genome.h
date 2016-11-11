@@ -11,8 +11,10 @@
 
 using namespace std;
 
-
-
+const int BIAS=0;
+const int INPUT = 1;
+const int HIDDEN = 2;
+const int OUTPUT = 3;
 class Genome
 {
 public:
@@ -23,11 +25,7 @@ public:
 	Network network;
 
 	Configuration configuration;
-
-	int input_n;
 	int hidden_n;
-	int output_n;
-	int max_neuron;
 	
 	double disjointCompare(Genome g1, Genome g2);
 	double weightCompare(Genome g1, Genome g2);
@@ -40,15 +38,19 @@ public:
 	Genome(Configuration configuration);
 	~Genome();
 
+	Genome copy();
 	Network toNeuralNetwork();
+	int randomNeuron(bool inclInput, bool inclBias);
+	bool containsGene(Gene gene);
 
 private:
 
+	map<int, int> neurons;
 };
 
 Genome* basicGenome(Configuration config);
 //mutate method with innovation function
-Genome fromMutate(Genome g, map<string, double> probabilities, int (*inno_func)(int));
+Genome fromMutate(Genome g, int (*inno_func)());
 Genome fromCrossOver(Genome g1, Genome g2, map<string, double> probabilities);
 
 

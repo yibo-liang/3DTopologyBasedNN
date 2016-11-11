@@ -8,6 +8,7 @@
 #include <assert.h>
 #include <algorithm>
 #include <functional>
+#include <ctime>
 
 template <typename T>
 //vector operator for addition
@@ -18,6 +19,21 @@ std::vector<T> operator+=(std::vector<T>& a, std::vector<T>& b)
 	std::transform(a.begin(), a.end(), b.begin(),
 		a.begin(), std::plus<T>());
 	return a;
+}
+
+template <typename T>
+std::vector<T> operator-(std::vector<T>& a, std::vector<T>& b)
+{
+	assert(a.size() == b.size());
+	vector<T>& c;
+	std::transform(a.begin(), a.end(), b.begin(), std::back_inserter(c),
+		[](double a, double b) { return fabs(a - b); });
+	return c;
+}
+
+
+double random() {
+	return ((double)rand() / (RAND_MAX));
 }
 
 typedef vector<Gene>::iterator map_iter;
@@ -134,10 +150,38 @@ bool Genome::isSameSpecies(Genome another)
 Genome::Genome(Configuration configuration)
 {
 	this->configuration = configuration;
+
+	//add all initial neuron(node) id for further usage
+	for (int i = 0; i < configuration.input_n; i++) {
+		this->neurons[i + configuration.offset_input_neuron_id] = INPUT;
+	}
+	for (int i = 0; i < configuration.output_n; i++) {
+		this->neurons[i + configuration.offset_output_neuron_id] = OUTPUT;
+	}
+
+	for (auto it = this->configuration.preset_hidden.begin();
+	it != this->configuration.preset_hidden.end(); it++) {
+		int i = it->second.id;
+		this->neurons[i + configuration.offset_hidden_neuron_id] = HIDDEN;
+	}
+	this->hidden_n = configuration.preset_hidden.size();
+
 }
 
 Genome::~Genome()
 {
+}
+
+
+Genome Genome::copy()
+{
+	Genome * copy = new Genome(this->configuration);
+	for (int i = 0; i < this->genes.size(); i++) {
+		copy->genes.push_back(this->genes[i].copy());
+	}
+	return *copy;
+
+
 }
 
 Network Genome::toNeuralNetwork()
@@ -181,7 +225,7 @@ Network Genome::toNeuralNetwork()
 	}
 
 	//bias node , is treated as an input node
-	if (this->configuration.isBiased) {
+	if (this->configuration.is_biased) {
 		Node * bias = new Node();
 		bias->id = this->configuration.input_n + 1;
 		bias->type = "bias";
@@ -198,19 +242,19 @@ Network Genome::toNeuralNetwork()
 			Edge* edge = new Edge();
 			network->edges[edge_count] = *edge;
 
-			if (network->nodes.count(gene->node_out)==0) {
+			if (network->nodes.count(gene->node_out) == 0) {
 				Node * node = new Node();
 				network->nodes[gene->node_out] = *node;
 			}
 
 			network->nodes[gene->node_out].edges_in.push_back(edge_count);
 			network->nodes[gene->node_out].vec_offset += gene->offset_vector;
-			
+
 			edge_count++;
 		}
 	}
 	//create node according to each gene's IN node
-    edge_count = 0;
+	edge_count = 0;
 	for (int i = 0; i < this->genes.size(); i++) {
 		Gene * gene = &this->genes[i];
 		if (gene->enabled) {
@@ -228,17 +272,135 @@ Network Genome::toNeuralNetwork()
 
 }
 
+int Genome::randomNeuron(bool inclInput, bool inclBias)
+{
+	srand(time(NULL));
+	vector<int> candidates;
+	typedef map<int, int>::iterator iter;
+	for (iter it = this->neurons.begin(); it != this->neurons.end(); it++) {
+		if (inclInput && it->second == INPUT
+			|| inclBias && it->second == BIAS) {
+
+		}
+		else {
+			candidates.push_back(it->first);
+		}
+	}
+	int count = candidates.size();
+	int select = rand() % count;
+	return candidates[select];
+}
+
 Genome* basicGenome(Configuration config) {
 	Genome* g = new Genome(config);
 
-	g->input_n = config.input_n;
-	g->output_n = config.output_n;
-	g->max_neuron = config.max_neuron;
 	return g;
 }
 
-Genome fromMutate(Genome g, map<string, double> probabilities, int(*inno_func)(int))
+
+vector<double> vec_in_sphere_between(vector<double> vec1, vector<double> vec2) {
+
+	//diameter
+	double d = distance(vec1, vec2);
+	vector<double> * result = new vector<double>();
+	for (int i = 0; i < vec1.size(); i++) {
+		double dv = abs(vec1[i] - vec2[i]);
+		double v = min(vec1[i], vec2[i]) + random() *dv;
+		result->push_back(dv);
+	}
+	return *result;
+}
+
+//mutation that addes a new link(edge)
+void link_mutate(Genome * g, int(*inno_func)()) {
+	int n1 = g->randomNeuron(true, g->configuration.is_biased);
+	int n2 = g->randomNeuron(false, false);
+	Gene * new_gene = new Gene();
+	new_gene->node_in = n1;
+	new_gene->node_out = n2;
+	if (g->containsGene(*new_gene)) {
+		return;
+	}
+
+	new_gene->weight = random()
+		* g->configuration.initial_weight_range * 2
+		- g->configuration.initial_weight_range;
+	int innovation = inno_func();
+	new_gene->innovation = innovation;
+
+	//offset vector for new link,
+	vector<double> vec1 = g->network.nodes[n1].vec_offset;
+	vector<double> vec2 = g->network.nodes[n2].vec_offset;
+
+
+	new_gene->offset_vector = vec_in_sphere_between(vec1, vec2);
+	g->genes.push_back(*new_gene);
+
+}
+
+// add a new node mutation
+void node_mutate(Genome * g, int(*inno_func)()) {
+	int gene_num = g->genes.size();
+	if (gene_num == 0) {
+		return;
+	}
+	int random_id = random() * gene_num;
+	Gene * rand_gene = &g->genes[random_id];
+	if (!rand_gene->enabled) {
+		return;
+	}
+	g->hidden_n++;
+	rand_gene->enabled = false;
+	Gene * gene1 = &(*rand_gene).copy();
+	gene1->node_out = g->hidden_n;
+	gene1->weight = 1;
+	gene1->enabled = true;
+	gene1->innovation = inno_func();
+	Gene * gene2 = &(*rand_gene).copy();
+	gene2->node_in = g->hidden_n;
+	gene2->enabled = true;
+	gene2->innovation = inno_func();
+
+	g->genes.push_back(*gene1);
+	g->genes.push_back(*gene2);
+
+}
+
+
+//change weight of a random link 
+void point_mutate(Genome * g) {
+	double step = g->configuration.probabilities["step"];
+
+	for (int i = 0; i < g->genes.size(); i++) {
+		Gene * gene = &g->genes[i];
+		if (random() < g->configuration.probabilities["w_purtubation"]) {
+			gene->weight = gene->weight + random()*step * 2 - step;
+		}
+		else {
+			gene->weight = random() * 4 - 2;
+		}
+	}
+}
+
+void position_mutate(Genome * g) {
+	double step = g->configuration.probabilities["p_step"];
+	for (int i = 0; i < g->genes.size(); i++) {
+		Gene * gene = &g->genes[i];
+		for (int j = 0; j < gene->offset_vector.size(); j++) {
+			if (random() < g->configuration.probabilities["p_purtubation"]) {
+				gene->offset_vector[j] = gene->offset_vector[j] + random()*step * 2 - step;
+			}
+			else {
+
+			}
+		}
+	}
+}
+
+Genome fromMutate(Genome g, int(*inno_func)())
 {
-	
-	return g;
+	double rate = g.configuration.probabilities["mutation"];
+
+	Genome * mutant = &g.copy();
+
 }

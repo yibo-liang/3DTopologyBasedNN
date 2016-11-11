@@ -41,7 +41,7 @@ Network Experiment::generateNeuralNetwork(Genome genome)
 	Network * network = new Network();
 	Configuration config = this->configuration;
 
-	for (int i = 0; i < genome.input_n; i++) {
+	for (int i = 0; i < genome.configuration.input_n; i++) {
 		Node * node = new Node();
 		node->id = i;
 		node->type = "input";

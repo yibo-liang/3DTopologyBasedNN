@@ -19,7 +19,7 @@ struct preset {
 
 class Configuration {
 public:
-
+	
 	int pool_quantity;
 	int pool_population;
 	int input_n;
@@ -37,7 +37,10 @@ public:
 
 	map<string, double> probabilities;
 
-	bool isBiased;
+	bool is_biased;
+	bool is_recurrent;
+
+	double initial_weight_range;
 
 	double disposition_weight;
 	double disjoint_weight;

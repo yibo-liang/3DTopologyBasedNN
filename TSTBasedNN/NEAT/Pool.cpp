@@ -11,6 +11,7 @@ int Pool::newInnovation()
 
 void Pool::newGeneration()
 {
+	//for each species
 	//for each genome, create a network
 	//for each network, eval it.
 	//eval(func, fcun){ }
