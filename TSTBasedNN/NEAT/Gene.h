@@ -21,7 +21,7 @@ public:
 
 
 	//offset for node Time-Space Topology Based NN 
-	
+	//will add up 
 	vector<double> offset_vector;
 	
 	Gene copy();

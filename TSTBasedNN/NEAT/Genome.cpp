@@ -241,14 +241,14 @@ Network Genome::toNeuralNetwork()
 			//create edge according to each gene
 			Edge* edge = new Edge();
 			network->edges[edge_count] = *edge;
-
-			if (network->nodes.count(gene->node_out) == 0) {
+			int id = gene->node_out;
+			if (network->nodes.count(id) == 0) {
 				Node * node = new Node();
-				network->nodes[gene->node_out] = *node;
+				network->nodes[id] = *node;
 			}
 
-			network->nodes[gene->node_out].edges_in.push_back(edge_count);
-			network->nodes[gene->node_out].vec_offset += gene->offset_vector;
+			network->nodes[id].edges_in.push_back(edge_count);
+			network->nodes[id].vec_offset += gene->offset_vector;
 
 			edge_count++;
 		}

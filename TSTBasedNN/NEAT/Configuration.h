@@ -46,6 +46,8 @@ public:
 	double disjoint_weight;
 	double dweight_weight;
 
+	bool is_preset_id(int id);
+
 	Configuration();
 	Configuration(int input_n, int output_n);
 	~Configuration();

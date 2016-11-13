@@ -2,6 +2,20 @@
 #include "Configuration.h"
 
 
+bool Configuration::is_preset_id(int id)
+{
+	if (id < preset_input.size() || this->is_biased && id<preset_input.size()+1) {
+		return true;
+	}
+	else if (id>=this->offset_hidden_neuron_id && id<preset_hidden.size()+this->offset_hidden_neuron_id) {
+		return true;
+	}
+	else if (id > this->offset_output_neuron_id && id < preset_output.size() + this->offset_output_neuron_id) {
+		return true;
+	}
+	return false;
+}
+
 Configuration::Configuration()
 {
 	this->pool_quantity = 1;
