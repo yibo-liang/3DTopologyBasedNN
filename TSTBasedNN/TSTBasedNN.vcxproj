@@ -150,12 +150,13 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="NEAT\Configuration.h" />
+    <ClInclude Include="NEAT\TGene.h" />
     <ClInclude Include="NN\Edge.h" />
     <ClInclude Include="NN\Network.h" />
     <ClInclude Include="NN\Node.h" />
     <ClInclude Include="NN\Signal.h" />
     <ClInclude Include="NEAT\Experiment.h" />
-    <ClInclude Include="NEAT\Gene.h" />
+    <ClInclude Include="NEAT\LGene.h" />
     <ClInclude Include="NEAT\Genome.h" />
     <ClInclude Include="NEAT\NeuronsConfiguration.h" />
     <ClInclude Include="NEAT\Pool.h" />
@@ -165,13 +166,14 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="NEAT\Configuration.cpp" />
+    <ClCompile Include="NEAT\TGene.cpp" />
     <ClCompile Include="NN\Network.cpp" />
     <ClCompile Include="TSTBasedNN.cpp" />
     <ClCompile Include="NN\Edge.cpp" />
     <ClCompile Include="NN\Node.cpp" />
     <ClCompile Include="NN\Signal.cpp" />
     <ClCompile Include="NEAT\Experiment.cpp" />
-    <ClCompile Include="NEAT\Gene.cpp" />
+    <ClCompile Include="NEAT\LGene.cpp" />
     <ClCompile Include="NEAT\Genome.cpp" />
     <ClCompile Include="NEAT\Pool.cpp" />
     <ClCompile Include="NEAT\Species.cpp" />

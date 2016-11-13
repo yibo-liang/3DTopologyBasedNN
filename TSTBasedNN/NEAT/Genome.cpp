@@ -36,11 +36,11 @@ double random() {
 	return ((double)rand() / (RAND_MAX));
 }
 
-typedef vector<Gene>::iterator map_iter;
+typedef vector<LGene>::iterator map_iter;
 double Genome::disjointCompare(Genome g1, Genome g2)
 {
-	vector<Gene> genes1 = g1.genes;
-	vector<Gene> genes2 = g2.genes;
+	vector<LGene> genes1 = g1.l_genes;
+	vector<LGene> genes2 = g2.l_genes;
 
 	map<int, bool> li1;
 	int c1 = 0, c2 = 0;
@@ -76,9 +76,9 @@ double Genome::disjointCompare(Genome g1, Genome g2)
 
 double Genome::weightCompare(Genome g1, Genome g2)
 {
-	vector<Gene> * genes1 = &g1.genes;
-	vector<Gene> * genes2 = &g2.genes;
-	map<int, Gene> i2;
+	vector<LGene> * genes1 = &g1.l_genes;
+	vector<LGene> * genes2 = &g2.l_genes;
+	map<int, LGene> i2;
 	for (map_iter it = genes2->begin(); it != genes2->end(); it++) {
 		i2[it->innovation] = *it;
 	}
@@ -87,7 +87,7 @@ double Genome::weightCompare(Genome g1, Genome g2)
 	for (map_iter it = genes1->begin(); it != genes1->end(); it++) {
 
 		if (i2.count(it->innovation) > 0) {
-			Gene gene2 = i2[it->innovation];
+			LGene gene2 = i2[it->innovation];
 			sum = sum + abs(it->weight - it->weight);
 			coincident++;
 		}
@@ -112,18 +112,18 @@ double distance(vector<double> v1, vector<double> v2) {
 
 double Genome::dispositionCompare(Genome g1, Genome g2)
 {
-	vector<Gene> * genes1 = &g1.genes;
-	vector<Gene> * genes2 = &g2.genes;
-	map<int, Gene> i2;
+	vector<LGene> * genes1 = &g1.l_genes;
+	vector<LGene> * genes2 = &g2.l_genes;
+	map<int, LGene> i2;
 	for (map_iter it = genes2->begin(); it != genes2->end(); it++) {
 		i2[it->innovation] = *it;
 	}
 	double sum = 0;
 	double coincident = 0;
 	for (map_iter it = genes1->begin(); it != genes1->end(); it++) {
-		Gene gene = *it;
+		LGene gene = *it;
 		if (i2.count(gene.innovation) > 0) {
-			Gene gene2 = i2[gene.innovation];
+			LGene gene2 = i2[gene.innovation];
 			sum = distance(gene.offset_vector, gene2.offset_vector);
 			coincident++;
 		}
@@ -176,8 +176,8 @@ Genome::~Genome()
 Genome Genome::copy()
 {
 	Genome * copy = new Genome(this->configuration);
-	for (int i = 0; i < this->genes.size(); i++) {
-		copy->genes.push_back(this->genes[i].copy());
+	for (int i = 0; i < this->l_genes.size(); i++) {
+		copy->l_genes.push_back(this->l_genes[i].copy());
 	}
 	return *copy;
 
@@ -235,8 +235,8 @@ Network Genome::toNeuralNetwork()
 	//creating nodes and edges according to genes
 			//create node according to each gene's OUT node
 	int edge_count = 0;
-	for (int i = 0; i < this->genes.size(); i++) {
-		Gene * gene = &this->genes[i];
+	for (int i = 0; i < this->l_genes.size(); i++) {
+		LGene * gene = &this->l_genes[i];
 		if (gene->enabled) {
 			//create edge according to each gene
 			Edge* edge = new Edge();
@@ -255,8 +255,8 @@ Network Genome::toNeuralNetwork()
 	}
 	//create node according to each gene's IN node
 	edge_count = 0;
-	for (int i = 0; i < this->genes.size(); i++) {
-		Gene * gene = &this->genes[i];
+	for (int i = 0; i < this->l_genes.size(); i++) {
+		LGene * gene = &this->l_genes[i];
 		if (gene->enabled) {
 
 			if (network->nodes.count(gene->node_in) == 0) {
@@ -315,10 +315,10 @@ vector<double> vec_in_sphere_between(vector<double> vec1, vector<double> vec2) {
 void link_mutate(Genome * g, int(*inno_func)()) {
 	int n1 = g->randomNeuron(true, g->configuration.is_biased);
 	int n2 = g->randomNeuron(false, false);
-	Gene * new_gene = new Gene();
+	LGene * new_gene = new LGene();
 	new_gene->node_in = n1;
 	new_gene->node_out = n2;
-	if (g->containsGene(*new_gene)) {
+	if (g->containsLGene(*new_gene)) {
 		return;
 	}
 
@@ -334,35 +334,35 @@ void link_mutate(Genome * g, int(*inno_func)()) {
 
 
 	new_gene->offset_vector = vec_in_sphere_between(vec1, vec2);
-	g->genes.push_back(*new_gene);
+	g->l_genes.push_back(*new_gene);
 
 }
 
 // add a new node mutation
 void node_mutate(Genome * g, int(*inno_func)()) {
-	int gene_num = g->genes.size();
+	int gene_num = g->l_genes.size();
 	if (gene_num == 0) {
 		return;
 	}
 	int random_id = random() * gene_num;
-	Gene * rand_gene = &g->genes[random_id];
+	LGene * rand_gene = &g->l_genes[random_id];
 	if (!rand_gene->enabled) {
 		return;
 	}
 	g->hidden_n++;
 	rand_gene->enabled = false;
-	Gene * gene1 = &(*rand_gene).copy();
+	LGene * gene1 = &(*rand_gene).copy();
 	gene1->node_out = g->hidden_n;
 	gene1->weight = 1;
 	gene1->enabled = true;
 	gene1->innovation = inno_func();
-	Gene * gene2 = &(*rand_gene).copy();
+	LGene * gene2 = &(*rand_gene).copy();
 	gene2->node_in = g->hidden_n;
 	gene2->enabled = true;
 	gene2->innovation = inno_func();
 
-	g->genes.push_back(*gene1);
-	g->genes.push_back(*gene2);
+	g->l_genes.push_back(*gene1);
+	g->l_genes.push_back(*gene2);
 
 }
 
@@ -371,8 +371,8 @@ void node_mutate(Genome * g, int(*inno_func)()) {
 void point_mutate(Genome * g) {
 	double step = g->configuration.probabilities["step"];
 
-	for (int i = 0; i < g->genes.size(); i++) {
-		Gene * gene = &g->genes[i];
+	for (int i = 0; i < g->l_genes.size(); i++) {
+		LGene * gene = &g->l_genes[i];
 		if (random() < g->configuration.probabilities["w_purtubation"]) {
 			gene->weight = gene->weight + random()*step * 2 - step;
 		}
@@ -384,8 +384,8 @@ void point_mutate(Genome * g) {
 
 void position_mutate(Genome * g) {
 	double step = g->configuration.probabilities["p_step"];
-	for (int i = 0; i < g->genes.size(); i++) {
-		Gene * gene = &g->genes[i];
+	for (int i = 0; i < g->l_genes.size(); i++) {
+		LGene * gene = &g->l_genes[i];
 		for (int j = 0; j < gene->offset_vector.size(); j++) {
 			if (random() < g->configuration.probabilities["p_purtubation"]) {
 				gene->offset_vector[j] = gene->offset_vector[j] + random()*step * 2 - step;

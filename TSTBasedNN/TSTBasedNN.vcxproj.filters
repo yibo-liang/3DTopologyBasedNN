@@ -21,9 +21,6 @@
     <ClInclude Include="targetver.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="NEAT\Gene.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="NEAT\Genome.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -54,12 +51,15 @@
     <ClInclude Include="NEAT\Configuration.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="NEAT\LGene.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="NEAT\TGene.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="NEAT\Gene.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="NEAT\Genome.cpp">
@@ -90,6 +90,12 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="NEAT\Configuration.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="NEAT\LGene.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="NEAT\TGene.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

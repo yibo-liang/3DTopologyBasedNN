@@ -7,7 +7,7 @@
 
 using namespace std;
 
-class Gene
+class LGene
 {
 public:
 
@@ -24,10 +24,10 @@ public:
 	//will add up 
 	vector<double> offset_vector;
 	
-	Gene copy();
+	LGene copy();
 
-	Gene();
-	~Gene();
+	LGene();
+	~LGene();
 
 private:
 

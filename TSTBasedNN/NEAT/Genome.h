@@ -4,7 +4,8 @@
 #define GENOME
 
 #include "Configuration.h"
-#include "Gene.h"
+#include "LGene.h"
+#include "TGene.h"
 #include <map>
 #include <vector>
 #include "../NN/Network.h"
@@ -19,7 +20,9 @@ class Genome
 {
 public:
 
-	vector<Gene> genes;
+	vector<LGene> l_genes;
+	vector<TGene> t_genes;
+
 	double fitness;
 	double adjusted_fitness;
 	Network network;
@@ -41,7 +44,7 @@ public:
 	Genome copy();
 	Network toNeuralNetwork();
 	int randomNeuron(bool inclInput, bool inclBias);
-	bool containsGene(Gene gene);
+	bool containsLGene(LGene lgene);
 
 private:
 

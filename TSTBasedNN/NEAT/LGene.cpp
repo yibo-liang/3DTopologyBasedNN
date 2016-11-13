@@ -1,11 +1,11 @@
 #include "../stdafx.h"
-#include "Gene.h"
+#include "LGene.h"
 
 
 
-Gene Gene::copy()
+LGene LGene::copy()
 {
-	Gene c;
+	LGene c;
 	c.innovation = this->innovation;
 	c.node_in = this->node_in;
 	c.node_out = this->node_out;
@@ -17,10 +17,10 @@ Gene Gene::copy()
 	return c;
 }
 
-Gene::Gene()
+LGene::LGene()
 {
 }
 
-Gene::~Gene()
+LGene::~LGene()
 {
 }
