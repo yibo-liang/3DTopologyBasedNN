@@ -19,12 +19,7 @@ public:
 	int enabled;
 	double weight;
 
-
-	//offset for node Time-Space Topology Based NN 
-	//will add up 
-	vector<double> offset_vector;
-	
-	LGene copy();
+	LGene(const LGene &obj);
 
 	LGene();
 	~LGene();

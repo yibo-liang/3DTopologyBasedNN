@@ -4,15 +4,6 @@
 
 bool Configuration::is_preset_id(int id)
 {
-	if (id < preset_input.size() || this->is_biased && id<preset_input.size()+1) {
-		return true;
-	}
-	else if (id>=this->offset_hidden_neuron_id && id<preset_hidden.size()+this->offset_hidden_neuron_id) {
-		return true;
-	}
-	else if (id > this->offset_output_neuron_id && id < preset_output.size() + this->offset_output_neuron_id) {
-		return true;
-	}
 	return false;
 }
 
@@ -24,12 +15,16 @@ Configuration::Configuration()
 
 	this->input_n = 1;
 	this->output_n = 1;
+	this->bias_n = 1;
 
-	this->max_neuron = 50;
+	this->max_hidden_n = 50;
 
-	this->offset_hidden_neuron_id = 10000;
+	this->min_neuron_distance = 1;
+
 	this->offset_input_neuron_id = 0;
-	this->offset_output_neuron_id = 20000;
+	this->offset_bias_neuron_id = 10000;
+	this->offset_hidden_neuron_id = 20000;
+	this->offset_output_neuron_id = 30000;
 
 	this->probabilities["mutate_link"] = 0.02; //mutate link's weight
 	this->probabilities["mutate_bias"] = 0.02; //bias weight
@@ -39,11 +34,10 @@ Configuration::Configuration()
 	this->probabilities["offset_range"] = 0.02;
 	this->probabilities["w_purtubation"] = 0.98;//purtubation rate for weight
 
-	this->probabilities["p_step"] = 1/3;
+	this->probabilities["p_step"] = 1 / 3;
 	this->probabilities["p_purtubation"] = 0.95;//purtubation rate for vector
 
 
-	this->is_biased = true;
 	this->is_recurrent = true;
 
 	this->initial_weight_range = 2;
@@ -61,4 +55,9 @@ Configuration::Configuration(int input_n, int output_n)
 
 Configuration::~Configuration()
 {
+}
+
+void Configuration::load_preset(const Preset& preset)
+{
+	this->preset = preset;
 }

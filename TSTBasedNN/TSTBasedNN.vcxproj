@@ -105,11 +105,15 @@
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
       <EnablePREfast>true</EnablePREfast>
+      <BrowseInformation>true</BrowseInformation>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
+    <Bscmake>
+      <PreserveSbr>true</PreserveSbr>
+    </Bscmake>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
@@ -150,6 +154,8 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="NEAT\Configuration.h" />
+    <ClInclude Include="NEAT\globals.h" />
+    <ClInclude Include="NEAT\Preset.h" />
     <ClInclude Include="NEAT\TGene.h" />
     <ClInclude Include="NN\Edge.h" />
     <ClInclude Include="NN\Network.h" />
@@ -166,6 +172,8 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="NEAT\Configuration.cpp" />
+    <ClCompile Include="NEAT\globals.cpp" />
+    <ClCompile Include="NEAT\Preset.cpp" />
     <ClCompile Include="NEAT\TGene.cpp" />
     <ClCompile Include="NN\Network.cpp" />
     <ClCompile Include="TSTBasedNN.cpp" />

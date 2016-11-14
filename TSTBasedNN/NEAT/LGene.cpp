@@ -3,18 +3,14 @@
 
 
 
-LGene LGene::copy()
+LGene::LGene(const LGene & obj)
 {
-	LGene c;
-	c.innovation = this->innovation;
-	c.node_in = this->node_in;
-	c.node_out = this->node_out;
-	c.weight = this->weight;
-	for (int i = 0; i < this->offset_vector.size(); i++) {
-		c.offset_vector.push_back(this->offset_vector[i]);
-	}
+	this->innovation = obj.innovation;
+	this->node_in = obj.node_in;
+	this->node_out = obj.node_out;
+	this->weight = obj.weight;
+	this->enabled = obj.enabled;
 
-	return c;
 }
 
 LGene::LGene()

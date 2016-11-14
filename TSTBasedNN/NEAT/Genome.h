@@ -12,10 +12,6 @@
 
 using namespace std;
 
-const int BIAS=0;
-const int INPUT = 1;
-const int HIDDEN = 2;
-const int OUTPUT = 3;
 class Genome
 {
 public:
@@ -29,31 +25,35 @@ public:
 
 	Configuration configuration;
 	int hidden_n;
+	//ptr of innovation function of the pool this genome blongs
+	int(*inno_func)();
+	int(*reset_inno)();
 	
 	double disjointCompare(Genome g1, Genome g2);
 	double weightCompare(Genome g1, Genome g2);
 	double dispositionCompare(Genome g1, Genome g2);
 
 	
-	bool isSameSpecies(Genome another);
+	bool isSameSpecies(const Genome& another);
 	
 
-	Genome(Configuration configuration);
+	Genome(const Configuration& configuration);
 	~Genome();
 
 	Genome copy();
+
+	void init();
 	Network toNeuralNetwork();
 	int randomNeuron(bool inclInput, bool inclBias);
-	bool containsLGene(LGene lgene);
+	bool containsLGene(const LGene& lgene);
 
 private:
 
-	map<int, int> neurons;
+	//map<int, int> neurons;
 };
 
-Genome* basicGenome(Configuration config);
 //mutate method with innovation function
-Genome fromMutate(Genome g, int (*inno_func)());
+Genome fromMutate(Genome g);
 Genome fromCrossOver(Genome g1, Genome g2, map<string, double> probabilities);
 
 

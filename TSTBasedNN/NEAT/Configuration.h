@@ -3,41 +3,38 @@
 #ifndef CONFIG
 #define CONFIG
 
+#include "Preset.h"
 #include <map>
 #include <list>
 #include <string>
 #include <vector>
 
 using namespace std;
-
 //structure to define preset neurons, such as input neuron 
 //type, activation function, 
-struct preset {
-	int id;
-	vector<double>  offset;
-} ;
+//The preset is solely designed to verify this TSTBasedNN, using existing successful network structure
+
 
 class Configuration {
 public:
-	
+
 	int pool_quantity;
 	int pool_population;
 	int input_n;
 	int output_n;
+	int bias_n;
 	int space_dimension;
-	int max_neuron;
+	int max_hidden_n;
 
 	int offset_input_neuron_id;
 	int offset_hidden_neuron_id;
 	int offset_output_neuron_id;
+	int offset_bias_neuron_id;
 
-	map<int, preset> preset_input;
-	map<int, preset> preset_hidden;
-	map<int, preset> preset_output;
+	double min_neuron_distance;
 
 	map<string, double> probabilities;
 
-	bool is_biased;
 	bool is_recurrent;
 
 	double initial_weight_range;
@@ -48,9 +45,12 @@ public:
 
 	bool is_preset_id(int id);
 
+	Preset preset;
+
 	Configuration();
 	Configuration(int input_n, int output_n);
 	~Configuration();
+	void load_preset(const Preset& preset);
 
 };
 

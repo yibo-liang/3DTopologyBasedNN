@@ -112,19 +112,19 @@ double distance(vector<double> v1, vector<double> v2) {
 
 double Genome::dispositionCompare(Genome g1, Genome g2)
 {
-	vector<LGene> * genes1 = &g1.l_genes;
-	vector<LGene> * genes2 = &g2.l_genes;
-	map<int, LGene> i2;
-	for (map_iter it = genes2->begin(); it != genes2->end(); it++) {
+	vector<TGene> * genes1 = &g1.t_genes;
+	vector<TGene> * genes2 = &g2.t_genes;
+	map<int, TGene> i2;
+	for (vector<TGene>::iterator it = genes2->begin(); it != genes2->end(); it++) {
 		i2[it->innovation] = *it;
 	}
 	double sum = 0;
 	double coincident = 0;
-	for (map_iter it = genes1->begin(); it != genes1->end(); it++) {
-		LGene gene = *it;
+	for (auto it = genes1->begin(); it != genes1->end(); it++) {
+		TGene gene = *it;
 		if (i2.count(gene.innovation) > 0) {
-			LGene gene2 = i2[gene.innovation];
-			sum = distance(gene.offset_vector, gene2.offset_vector);
+			TGene gene2 = i2[gene.innovation];
+			sum = distance(gene.offset, gene2.offset);
 			coincident++;
 		}
 	}
@@ -133,7 +133,7 @@ double Genome::dispositionCompare(Genome g1, Genome g2)
 	return sum / coincident;
 }
 
-bool Genome::isSameSpecies(Genome another)
+bool Genome::isSameSpecies(const Genome& another)
 {
 	double threshold = 1.0;
 	double disjoint = this->disjointCompare(*this, another);
@@ -147,24 +147,9 @@ bool Genome::isSameSpecies(Genome another)
 }
 
 
-Genome::Genome(Configuration configuration)
+Genome::Genome(const Configuration& configuration)
 {
 	this->configuration = configuration;
-
-	//add all initial neuron(node) id for further usage
-	for (int i = 0; i < configuration.input_n; i++) {
-		this->neurons[i + configuration.offset_input_neuron_id] = INPUT;
-	}
-	for (int i = 0; i < configuration.output_n; i++) {
-		this->neurons[i + configuration.offset_output_neuron_id] = OUTPUT;
-	}
-
-	for (auto it = this->configuration.preset_hidden.begin();
-	it != this->configuration.preset_hidden.end(); it++) {
-		int i = it->second.id;
-		this->neurons[i + configuration.offset_hidden_neuron_id] = HIDDEN;
-	}
-	this->hidden_n = configuration.preset_hidden.size();
 
 }
 
@@ -177,100 +162,138 @@ Genome Genome::copy()
 {
 	Genome * copy = new Genome(this->configuration);
 	for (int i = 0; i < this->l_genes.size(); i++) {
-		copy->l_genes.push_back(this->l_genes[i].copy());
+		copy->l_genes.push_back(*new LGene(this->l_genes[i]));
 	}
 	return *copy;
 
 
 }
 
+void Genome::init()
+{
+	/*
+	this funciton should only be called once, when the pool is created and initial genomes are added
+
+	add all tgene --- the position of the neurons, from the preset
+	if no preset tgene
+	create all tgene by iterating lgene first
+	firstly assign innovation to tgenes, node comes first
+	if no preset lgene
+	create tgene according to configuration: input_n; output_n; bias_n. Hidden neuron will be minimum at the beginning
+*/
+
+	reset_inno();//reset innovation function for the initialisation of this genome
+	int tgene_preset_n = this->configuration.preset.preset_t.size();
+	if (tgene_preset_n > 0) {
+		for (int i = 0; i < tgene_preset_n; i++) {
+			TGene * tg = new TGene(configuration.preset.preset_t[i]);
+			tg->innovation = inno_func();
+			this->t_genes.push_back(*tg);
+		}
+	}
+	else {
+		//no preset tgene
+		int lgene_preset_n = this->configuration.preset.preset_l.size();
+
+
+	}
+}
+
 Network Genome::toNeuralNetwork()
 {
-	Network * network = new Network();
-
-	int dimension = this->configuration.space_dimension;
-
-	//input layer nodes
-	for (int i = 0; i < this->configuration.input_n; i++) {
-		Node * node = new Node();
-		//if preset config for the node
-		if (this->configuration.preset_input.count(i)) {
-			node->vec_offset = *new vector<double>(this->configuration.preset_input[i].offset);
-		}
-		node->id = i + this->configuration.offset_input_neuron_id;
-		node->type = "input";
-		network->nodes[node->id] = *node;
-
-	}
-	//hidden layer nodes
-	for (int i = 0; i < this->configuration.preset_hidden.size(); i++) {
-		Node * node = new Node();
-		//preset
-		if (this->configuration.preset_hidden.count(i)) {
-			node->vec_offset = *new vector<double>(this->configuration.preset_hidden[i].offset);
-		}
-		node->id = i + this->configuration.offset_hidden_neuron_id;
-		node->type = "hidden";
-		network->nodes[node->id] = *node;
-	}
-	//ouptut layer nodes
-	for (int i = 0; i < this->configuration.output_n; i++) {
-		Node * node = new Node();
-		if (this->configuration.preset_output.count(i)) {
-			node->vec_offset = *new vector<double>(this->configuration.preset_output[i].offset);
-		}
-		node->id = i + this->configuration.offset_output_neuron_id;
-		node->type = "output";
-		network->nodes[node->id] = *node;
-	}
-
-	//bias node , is treated as an input node
-	if (this->configuration.is_biased) {
-		Node * bias = new Node();
-		bias->id = this->configuration.input_n + 1;
-		bias->type = "bias";
-		network->nodes[bias->id] = *bias;
-	}
-
-	//creating nodes and edges according to genes
-			//create node according to each gene's OUT node
-	int edge_count = 0;
-	for (int i = 0; i < this->l_genes.size(); i++) {
-		LGene * gene = &this->l_genes[i];
-		if (gene->enabled) {
-			//create edge according to each gene
-			Edge* edge = new Edge();
-			network->edges[edge_count] = *edge;
-			int id = gene->node_out;
-			if (network->nodes.count(id) == 0) {
-				Node * node = new Node();
-				network->nodes[id] = *node;
-			}
-
-			network->nodes[id].edges_in.push_back(edge_count);
-			network->nodes[id].vec_offset += gene->offset_vector;
-
-			edge_count++;
-		}
-	}
-	//create node according to each gene's IN node
-	edge_count = 0;
-	for (int i = 0; i < this->l_genes.size(); i++) {
-		LGene * gene = &this->l_genes[i];
-		if (gene->enabled) {
-
-			if (network->nodes.count(gene->node_in) == 0) {
-				Node * node = new Node();
-				network->nodes[gene->node_in] = *node;
-			}
-			network->nodes[gene->node_out].edges_out.push_back(edge_count);
-			edge_count++;
-		}
-	}
-
-	return *network;
-
+	return Network();
 }
+
+
+
+//
+//Network Genome::toNeuralNetwork()
+//{
+//	Network * network = new Network();
+//
+//	int dimension = this->configuration.space_dimension;
+//
+//	//input layer nodes
+//	for (int i = 0; i < this->configuration.input_n; i++) {
+//		Node * node = new Node();
+//		//if preset config for the node
+//		if (this->configuration.preset_input.count(i)) {
+//			node->vec_offset = *new vector<double>(this->configuration.preset_input[i].offset);
+//		}
+//		node->id = i + this->configuration.offset_input_neuron_id;
+//		node->type = "input";
+//		network->nodes[node->id] = *node;
+//
+//	}
+//	//hidden layer nodes
+//	for (int i = 0; i < this->configuration.preset_hidden.size(); i++) {
+//		Node * node = new Node();
+//		//preset
+//		if (this->configuration.preset_hidden.count(i)) {
+//			node->vec_offset = *new vector<double>(this->configuration.preset_hidden[i].offset);
+//		}
+//		node->id = i + this->configuration.offset_hidden_neuron_id;
+//		node->type = "hidden";
+//		network->nodes[node->id] = *node;
+//	}
+//	//ouptut layer nodes
+//	for (int i = 0; i < this->configuration.output_n; i++) {
+//		Node * node = new Node();
+//		if (this->configuration.preset_output.count(i)) {
+//			node->vec_offset = *new vector<double>(this->configuration.preset_output[i].offset);
+//		}
+//		node->id = i + this->configuration.offset_output_neuron_id;
+//		node->type = "output";
+//		network->nodes[node->id] = *node;
+//	}
+//
+//	//bias node , is treated as an input node
+//	if (this->configuration.is_biased) {
+//		Node * bias = new Node();
+//		bias->id = this->configuration.input_n + 1;
+//		bias->type = "bias";
+//		network->nodes[bias->id] = *bias;
+//	}
+//
+//	//creating nodes and edges according to genes
+//			//create node according to each gene's OUT node
+//	int edge_count = 0;
+//	for (int i = 0; i < this->l_genes.size(); i++) {
+//		LGene * gene = &this->l_genes[i];
+//		if (gene->enabled) {
+//			//create edge according to each gene
+//			Edge* edge = new Edge();
+//			network->edges[edge_count] = *edge;
+//			int id = gene->node_out;
+//			if (network->nodes.count(id) == 0) {
+//				Node * node = new Node();
+//				network->nodes[id] = *node;
+//			}
+//
+//			network->nodes[id].edges_in.push_back(edge_count);
+//			network->nodes[id].vec_offset += gene->offset_vector;
+//
+//			edge_count++;
+//		}
+//	}
+//	//create node according to each gene's IN node
+//	edge_count = 0;
+//	for (int i = 0; i < this->l_genes.size(); i++) {
+//		LGene * gene = &this->l_genes[i];
+//		if (gene->enabled) {
+//
+//			if (network->nodes.count(gene->node_in) == 0) {
+//				Node * node = new Node();
+//				network->nodes[gene->node_in] = *node;
+//			}
+//			network->nodes[gene->node_out].edges_out.push_back(edge_count);
+//			edge_count++;
+//		}
+//	}
+//
+//	return *network;
+//
+//}
 
 int Genome::randomNeuron(bool inclInput, bool inclBias)
 {
@@ -278,8 +301,8 @@ int Genome::randomNeuron(bool inclInput, bool inclBias)
 	vector<int> candidates;
 	typedef map<int, int>::iterator iter;
 	for (iter it = this->neurons.begin(); it != this->neurons.end(); it++) {
-		if (inclInput && it->second == INPUT
-			|| inclBias && it->second == BIAS) {
+		if (inclInput && it->second == INPUT_NEURON
+			|| inclBias && it->second == BIAS_NEURON) {
 
 		}
 		else {
@@ -289,12 +312,6 @@ int Genome::randomNeuron(bool inclInput, bool inclBias)
 	int count = candidates.size();
 	int select = rand() % count;
 	return candidates[select];
-}
-
-Genome* basicGenome(Configuration config) {
-	Genome* g = new Genome(config);
-
-	return g;
 }
 
 
@@ -312,7 +329,7 @@ vector<double> vec_in_sphere_between(vector<double> vec1, vector<double> vec2) {
 }
 
 //mutation that addes a new link(edge)
-void link_mutate(Genome * g, int(*inno_func)()) {
+void link_mutate(Genome * g) {
 	int n1 = g->randomNeuron(true, g->configuration.is_biased);
 	int n2 = g->randomNeuron(false, false);
 	LGene * new_gene = new LGene();
@@ -325,7 +342,7 @@ void link_mutate(Genome * g, int(*inno_func)()) {
 	new_gene->weight = random()
 		* g->configuration.initial_weight_range * 2
 		- g->configuration.initial_weight_range;
-	int innovation = inno_func();
+	int innovation = g->inno_func();
 	new_gene->innovation = innovation;
 
 	//offset vector for new link,
@@ -339,7 +356,7 @@ void link_mutate(Genome * g, int(*inno_func)()) {
 }
 
 // add a new node mutation
-void node_mutate(Genome * g, int(*inno_func)()) {
+void node_mutate(Genome * g) {
 	int gene_num = g->l_genes.size();
 	if (gene_num == 0) {
 		return;

@@ -2,7 +2,13 @@
 #include "Pool.h"
 #include <iostream>
 
-int Pool::newInnovation()
+
+int Pool::resetInnovation()
+{
+	this->innovation = 0;
+}
+
+int Pool::getInnovation()
 {
 	int i = this->innovation;
 	this->innovation++;

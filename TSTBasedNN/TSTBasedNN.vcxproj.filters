@@ -57,6 +57,12 @@
     <ClInclude Include="NEAT\TGene.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="NEAT\Preset.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="NEAT\globals.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -96,6 +102,12 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="NEAT\TGene.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="NEAT\Preset.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="NEAT\globals.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

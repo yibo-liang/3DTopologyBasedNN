@@ -13,7 +13,8 @@ public:
 	//list of species, remember to delete every single of them when distructing
 	list<Species> species;
 	int generation;
-	int newInnovation();
+	int resetInnovation();
+	int getInnovation();
 
 	
 
