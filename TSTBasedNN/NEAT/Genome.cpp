@@ -96,6 +96,15 @@ double Genome::weightCompare(Genome g1, Genome g2)
 	return sum / coincident;
 }
 
+vector<double> randomVec(int dim) {
+	vector<double> result;
+	//random value -100 to 100 for each dimention of this vec
+	for (int i = 0; i < dim; i++) {
+		result.push_back(random() * 200 - 100);
+	}
+	return (result);
+}
+
 double distance(vector<double> v1, vector<double> v2) {
 	//euclidean distance
 	if (v1.size() == v2.size()) {
@@ -175,6 +184,8 @@ void Genome::init()
 	this funciton should only be called once, when the pool is created and initial genomes are added
 
 	add all tgene --- the position of the neurons, from the preset
+		then iterate lgene, assign node that are not defined by tgene with random value,
+
 	if no preset tgene
 	create all tgene by iterating lgene first
 	firstly assign innovation to tgenes, node comes first
@@ -184,11 +195,34 @@ void Genome::init()
 
 	reset_inno();//reset innovation function for the initialisation of this genome
 	int tgene_preset_n = this->configuration.preset.preset_t.size();
+	int lgene_preset_n = this->configuration.preset.preset_l.size();
+
+
 	if (tgene_preset_n > 0) {
+
+		map<int, bool> node_created;
 		for (int i = 0; i < tgene_preset_n; i++) {
 			TGene * tg = new TGene(configuration.preset.preset_t[i]);
 			tg->innovation = inno_func();
+			node_created[tg->id] = true;
 			this->t_genes.push_back(*tg);
+		}
+
+		for (int i = 0; i < lgene_preset_n; i++) {
+			LGene * lg = new LGene(configuration.preset.preset_l[i]);
+			if (node_created.count(lg->node_in) == 0) {
+				TGene * tg = new TGene();
+				tg->id = lg->node_in;
+				tg->enabled = true;
+				tg->offset = randomVec(this->configuration.space_dimension);
+				tg->innovation = inno_func();
+				tg->type = this->configuration.get_node_type_from_id(tg->id);
+				tg->base = -1;
+			}
+			else {
+
+			}
+
 		}
 	}
 	else {

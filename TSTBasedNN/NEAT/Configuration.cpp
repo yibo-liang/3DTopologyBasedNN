@@ -7,6 +7,28 @@ bool Configuration::is_preset_id(int id)
 	return false;
 }
 
+int Configuration::get_node_type_from_id(int id)
+{
+	for (int i = 0; i < this->preset.preset_t.size(); i++) {
+		if (this->preset.preset_t[i].id == id) {
+			return this->preset.preset_t[i].type;
+		}
+	}
+	if (id >= constants::offset_input_neuron_id && id < this->input_n + constants::offset_input_neuron_id) {
+		return INPUT_NEURON;
+	}
+	if (id >= constants::offset_output_neuron_id && id < this->output_n + constants::offset_output_neuron_id) {
+		return OUTPUT_NEURON;
+	}
+	if (id >= constants::offset_hidden_neuron_id && id < this->max_hidden_n + constants::offset_hidden_neuron_id) {
+		return HIDDEN_NEURON;
+	}
+	if (id >= constants::offset_bias_neuron_id && id < this->bias_n + constants::offset_bias_neuron_id) {
+		return BIAS_NEURON;
+	}
+	return HIDDEN_NEURON;
+}
+
 Configuration::Configuration()
 {
 	this->pool_quantity = 1;

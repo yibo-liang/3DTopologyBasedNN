@@ -45,6 +45,8 @@ public:
 
 	bool is_preset_id(int id);
 
+	int get_node_type_from_id(int id);
+
 	Preset preset;
 
 	Configuration();

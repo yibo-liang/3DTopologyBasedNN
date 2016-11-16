@@ -3,7 +3,7 @@
 #include <iostream>
 
 using namespace constants;
-int get_id_offset(int type)
+int constants::get_id_offset(int type)
 {
 	if (type == INPUT_NEURON) return offset_input_neuron_id;
 	if (type == OUTPUT_NEURON) return offset_output_neuron_id;
@@ -12,5 +12,3 @@ int get_id_offset(int type)
 	std::cout << "Neuron Type Error: " << type;
 	return 0;
 }
-
-
