@@ -25,27 +25,28 @@ public:
 
 	Configuration configuration;
 	int hidden_n;
+	int bias_n;
+
 	//ptr of innovation function of the pool this genome blongs
 	int(*inno_func)();
 	int(*reset_inno)();
-	
+
 	double disjointCompare(Genome g1, Genome g2);
 	double weightCompare(Genome g1, Genome g2);
 	double dispositionCompare(Genome g1, Genome g2);
 
-	
-	bool isSameSpecies(const Genome& another);
-	
 
+	bool isSameSpecies(const Genome& another);
+
+	Genome(const Genome& obj);
 	Genome(const Configuration& configuration);
 	~Genome();
-
-	Genome copy();
 
 	void init();
 	Network toNeuralNetwork();
 	int randomNeuron(bool inclInput, bool inclBias);
 	bool containsLGene(const LGene& lgene);
+	TGene& get_tgene_by_id(int id);
 
 private:
 
@@ -53,7 +54,7 @@ private:
 };
 
 //mutate method with innovation function
-Genome fromMutate(Genome g);
+Genome fromMutate(const Genome &g, int(*inno_func)());
 Genome fromCrossOver(Genome g1, Genome g2, map<string, double> probabilities);
 
 

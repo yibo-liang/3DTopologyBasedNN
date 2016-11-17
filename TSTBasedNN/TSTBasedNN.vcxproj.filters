@@ -33,9 +33,6 @@
     <ClInclude Include="NEAT\Experiment.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="NEAT\NeuronsConfiguration.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="NN\Edge.h">
       <Filter>Header Files</Filter>
     </ClInclude>

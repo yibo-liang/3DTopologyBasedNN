@@ -17,12 +17,14 @@ public:
 	
 	string type;
 
-	vector<double> vec_offset;
+	vector<double> position;
 
 	list<int> edges_in;
 	list<int> edges_out;
 
 	list<Signal> activation_signals;
+
+	double(*activation)(vector<double>);
 
 	Node();
 	~Node();

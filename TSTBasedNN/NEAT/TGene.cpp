@@ -17,6 +17,7 @@ TGene::TGene(const TGene & obj)
 TGene::TGene()
 {
 	this->enabled = true;
+	this->fixed = false;
 	this->type = HIDDEN_NEURON;
 }
 

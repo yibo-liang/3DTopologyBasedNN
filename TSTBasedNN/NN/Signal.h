@@ -10,6 +10,8 @@ public:
 	double strength;
 	double age;
 
+	Signal(const Signal& obj);
+
 	Signal();
 	~Signal();
 

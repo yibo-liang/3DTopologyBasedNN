@@ -43,6 +43,12 @@ Preset::Preset()
 
 Preset::~Preset()
 {
+	for (int i = 0; i < this->preset_l.size(); i++) {
+		delete &this->preset_l[i];
+	}
+	for (auto it = this->preset_t.begin(); it != this->preset_t.end(); it++) {
+		delete &it->second;
+	}
 }
 
 

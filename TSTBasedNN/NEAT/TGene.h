@@ -12,9 +12,10 @@ public:
 	int id;
 	//ID of base of the node, which this node is based on
 	int base;
-	int type;
+	int type; //input, output, hidden, bias
 	int innovation;
-	bool enabled;
+	bool enabled;//if this node is good to be connected with other node
+	bool fixed;//if this node is fixed in space, if not, position will be changed during evolutionary process
 	vector<double> offset;
 	//Activation function of this neuron, which could have been changed by user or evolution process
 	//takes a vector of double input, returns a double

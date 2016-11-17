@@ -86,7 +86,7 @@
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
-      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -164,7 +164,6 @@
     <ClInclude Include="NEAT\Experiment.h" />
     <ClInclude Include="NEAT\LGene.h" />
     <ClInclude Include="NEAT\Genome.h" />
-    <ClInclude Include="NEAT\NeuronsConfiguration.h" />
     <ClInclude Include="NEAT\Pool.h" />
     <ClInclude Include="NEAT\Species.h" />
     <ClInclude Include="stdafx.h" />
