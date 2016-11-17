@@ -4,7 +4,6 @@
 #define NODE
 
 #include "Signal.h"
-#include <list>
 #include <vector>
 
 using namespace std;
@@ -19,13 +18,13 @@ public:
 
 	vector<double> position;
 
-	list<int> edges_in;
-	list<int> edges_out;
+	vector<int> edges_in;
+	vector<int> edges_out;
 
-	list<Signal> activation_signals;
+	vector<Signal> activation_signals;
 
 	double(*activation)(vector<double>);
-
+	Node(const Node& obj);
 	Node();
 	~Node();
 

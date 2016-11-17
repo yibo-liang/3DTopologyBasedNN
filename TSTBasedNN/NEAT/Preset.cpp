@@ -36,6 +36,12 @@ void Preset::add_l_gene(int node_in, int node_in_type, int node_out, int node_ou
 	this->preset_l.push_back(*lg);
 }
 
+Preset::Preset(const Preset & obj)
+{
+	this->preset_l = obj.preset_l;
+	this->preset_t = obj.preset_t;
+}
+
 Preset::Preset()
 {
 

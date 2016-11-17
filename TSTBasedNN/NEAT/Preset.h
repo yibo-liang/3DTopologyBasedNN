@@ -37,7 +37,7 @@ public:
 	void add_l_gene(int node_in, int node_in_type, int node_out, int node_out_type, double weight);
 	void add_l_gene(int node_in, int node_in_type, int node_out, int node_out_type, double weight, bool enabled);
 	
-
+	Preset(const Preset& obj);
 	Preset();
 	~Preset();
 

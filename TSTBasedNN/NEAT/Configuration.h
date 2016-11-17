@@ -50,6 +50,7 @@ public:
 	Preset preset;
 
 	Configuration();
+	Configuration(const Configuration& obj);
 	Configuration(int input_n, int output_n);
 	~Configuration();
 	void load_preset(const Preset& preset);

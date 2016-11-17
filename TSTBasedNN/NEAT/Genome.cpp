@@ -163,10 +163,12 @@ Genome::Genome(const Genome & obj)
 {
 	//copy
 	for (int i = 0; i < obj.t_genes.size(); i++) {
-		this->t_genes.push_back(*new TGene(obj.t_genes[i]));
+		TGene tg(obj.t_genes[i]);
+		this->t_genes.push_back(tg);
 	}
 	for (int i = 0; i < obj.l_genes.size(); i++) {
-		this->l_genes.push_back(*new LGene(obj.l_genes[i]));
+		LGene lg(obj.l_genes[i]);
+		this->l_genes.push_back(lg);
 	}
 
 	this->bias_n = obj.bias_n;
@@ -222,59 +224,59 @@ void Genome::init()
 	map<int, bool> node_created;
 	//create tgene from preset tgene
 	for (int i = 0; i < tgene_preset_n; i++) {
-		TGene * tg = new TGene(configuration.preset.preset_t[i]);
-		tg->innovation = inno_func();
+		TGene tg(configuration.preset.preset_t[i]);
+		tg.innovation = inno_func();
 		node_created[configuration.preset.preset_t[i].id] = true;
 
-		if (tg->type == HIDDEN_NEURON) this->hidden_n++;
-		if (tg->type == BIAS_NEURON) this->bias_n++;
+		if (tg.type == HIDDEN_NEURON) this->hidden_n++;
+		if (tg.type == BIAS_NEURON) this->bias_n++;
 
-		this->t_genes.push_back(*tg);
+		this->t_genes.push_back(tg);
 	}
 	//create tgene from preset lgene
 	for (int i = 0; i < lgene_preset_n; i++) {
-		LGene * lg = new LGene(configuration.preset.preset_l[i]);
+		LGene lg(configuration.preset.preset_l[i]);
 
 		//for node in of this lgene
-		if (node_created.count(lg->node_in) == 0) {
-			TGene * tg = new TGene();
-			tg->id = lg->node_in;
-			tg->enabled = true;
-			tg->offset = randomVec(this->configuration.space_dimension);
-			tg->innovation = inno_func();
-			tg->type = this->configuration.get_node_type_from_id(tg->id);
-			tg->base = -1;
+		if (node_created.count(lg.node_in) == 0) {
+			TGene tg;
+			tg.id = lg.node_in;
+			tg.enabled = true;
+			tg.offset = randomVec(this->configuration.space_dimension);
+			tg.innovation = inno_func();
+			tg.type = this->configuration.get_node_type_from_id(tg.id);
+			tg.base = -1;
 			for (int j = 0; j < lgene_preset_n; j++) {
-				if (configuration.preset.preset_l[j].node_out == tg->id) {
-					tg->base = configuration.preset.preset_l[j].node_in;
+				if (configuration.preset.preset_l[j].node_out == tg.id) {
+					tg.base = configuration.preset.preset_l[j].node_in;
 				}
 			}
 
-			if (tg->type == HIDDEN_NEURON) this->hidden_n++;
-			if (tg->type == BIAS_NEURON) this->bias_n++;
+			if (tg.type == HIDDEN_NEURON) this->hidden_n++;
+			if (tg.type == BIAS_NEURON) this->bias_n++;
 
-			this->t_genes.push_back(*tg);
+			this->t_genes.push_back(tg);
 
-			node_created[tg->id] = true;
+			node_created[tg.id] = true;
 		}
 		else {
 
 		}
 		//for node out of this lgene
-		if (node_created.count(lg->node_out) == 0) {
-			TGene * tg = new TGene();
-			tg->id = lg->node_out;
-			tg->enabled = true;
-			tg->offset = randomVec(this->configuration.space_dimension);
-			tg->innovation = inno_func();
-			tg->type = this->configuration.get_node_type_from_id(tg->id);
-			tg->base = this->configuration.preset.preset_t[lg->node_in].id;
+		if (node_created.count(lg.node_out) == 0) {
+			TGene tg;
+			tg.id = lg.node_out;
+			tg.enabled = true;
+			tg.offset = randomVec(this->configuration.space_dimension);
+			tg.innovation = inno_func();
+			tg.type = this->configuration.get_node_type_from_id(tg.id);
+			tg.base = this->configuration.preset.preset_t[lg.node_in].id;
 
-			if (tg->type == HIDDEN_NEURON) this->hidden_n++;
-			if (tg->type == BIAS_NEURON) this->bias_n++;
+			if (tg.type == HIDDEN_NEURON) this->hidden_n++;
+			if (tg.type == BIAS_NEURON) this->bias_n++;
 
-			this->t_genes.push_back(*tg);
-			node_created[tg->id] = true;
+			this->t_genes.push_back(tg);
+			node_created[tg.id] = true;
 		}
 		else {
 
@@ -295,14 +297,14 @@ void Genome::init()
 		for (int i = 0; i < n; i++) {
 			int id = i + constants::get_id_offset(types[t]);
 			if (node_created.count(id) == 0) {
-				TGene * tg = new TGene();
-				tg->id = id;
-				tg->enabled = true;
-				tg->offset = randomVec(this->configuration.space_dimension);
-				tg->innovation = inno_func();
-				tg->type = types[t];
-				tg->base = -1;
-				this->t_genes.push_back(*tg);
+				TGene tg;
+				tg.id = id;
+				tg.enabled = true;
+				tg.offset = randomVec(this->configuration.space_dimension);
+				tg.innovation = inno_func();
+				tg.type = types[t];
+				tg.base = -1;
+				this->t_genes.push_back(tg);
 			}
 		}
 	}
@@ -313,17 +315,17 @@ void Genome::init()
 
 Network Genome::toNeuralNetwork()
 {
-	Network * network = new Network();
+	Network network;
 
 	//firstly express all tgenes with -1 base, that is, expressing all self position based neurons
 	int expressed = 0;
 	for (int i = 0; i < this->t_genes.size(); i++) {
 		if (this->t_genes[i].base == -1) {
-			Node * node = new Node();
-			node->position = this->t_genes[i].offset;
-			node->activation = this->t_genes[i].activation;
-			node->type = this->t_genes[i].type;
-			network->nodes[node->id] = *node;
+			Node node;
+			node.position = this->t_genes[i].offset;
+			node.activation = this->t_genes[i].activation;
+			node.type = this->t_genes[i].type;
+			network.nodes[node.id] = node;
 			expressed++;
 		}
 	}
@@ -334,13 +336,13 @@ Network Genome::toNeuralNetwork()
 		for (int i = 0; i < this->t_genes.size(); i++) {
 			int base_id = this->t_genes[i].base;
 			int id = this->t_genes[i].id;
-			if (network->nodes.count(base_id) >0 && network->nodes.count(id) == 0) {
-				Node * node = new Node();
+			if (network.nodes.count(base_id) >0 && network.nodes.count(id) == 0) {
+				Node node;
 				//node 's position is calculated by adding its offset on base's position
-				node->position = this->t_genes[i].offset + network->nodes[base_id].position;
-				node->activation = this->t_genes[i].activation;
-				node->type = this->t_genes[i].type;
-				network->nodes[node->id] = *node;
+				node.position = this->t_genes[i].offset + network.nodes[base_id].position;
+				node.activation = this->t_genes[i].activation;
+				node.type = this->t_genes[i].type;
+				network.nodes[node.id] = node;
 				expressed++;
 			}
 		}
@@ -348,106 +350,17 @@ Network Genome::toNeuralNetwork()
 	//all tgene expressed, now lgenes
 
 	for (int i = 0; i < this->l_genes.size(); i++) {
-		Edge * edge = new Edge();
-		edge->id = i;
-		edge->node_in = this->l_genes[i].node_in;
-		edge->node_out = this->l_genes[i].node_out;
-		edge->length = distance(network->nodes[edge->node_in].position, network->nodes[edge->node_out].position);
-		network->edges[edge->id] = *edge;
+		Edge edge;
+		edge.id = i;
+		edge.node_in = this->l_genes[i].node_in;
+		edge.node_out = this->l_genes[i].node_out;
+		edge.length = distance(network.nodes[edge.node_in].position, network.nodes[edge.node_out].position);
+		network.edges[edge.id] = edge;
 	}
-	return *network;
+	return network;
 }
 
 
-
-//
-//Network Genome::toNeuralNetwork()
-//{
-//	Network * network = new Network();
-//
-//	int dimension = this->configuration.space_dimension;
-//
-//	//input layer nodes
-//	for (int i = 0; i < this->configuration.input_n; i++) {
-//		Node * node = new Node();
-//		//if preset config for the node
-//		if (this->configuration.preset_input.count(i)) {
-//			node->vec_offset = *new vector<double>(this->configuration.preset_input[i].offset);
-//		}
-//		node->id = i + this->configuration.offset_input_neuron_id;
-//		node->type = "input";
-//		network->nodes[node->id] = *node;
-//
-//	}
-//	//hidden layer nodes
-//	for (int i = 0; i < this->configuration.preset_hidden.size(); i++) {
-//		Node * node = new Node();
-//		//preset
-//		if (this->configuration.preset_hidden.count(i)) {
-//			node->vec_offset = *new vector<double>(this->configuration.preset_hidden[i].offset);
-//		}
-//		node->id = i + this->configuration.offset_hidden_neuron_id;
-//		node->type = "hidden";
-//		network->nodes[node->id] = *node;
-//	}
-//	//ouptut layer nodes
-//	for (int i = 0; i < this->configuration.output_n; i++) {
-//		Node * node = new Node();
-//		if (this->configuration.preset_output.count(i)) {
-//			node->vec_offset = *new vector<double>(this->configuration.preset_output[i].offset);
-//		}
-//		node->id = i + this->configuration.offset_output_neuron_id;
-//		node->type = "output";
-//		network->nodes[node->id] = *node;
-//	}
-//
-//	//bias node , is treated as an input node
-//	if (this->configuration.is_biased) {
-//		Node * bias = new Node();
-//		bias->id = this->configuration.input_n + 1;
-//		bias->type = "bias";
-//		network->nodes[bias->id] = *bias;
-//	}
-//
-//	//creating nodes and edges according to genes
-//			//create node according to each gene's OUT node
-//	int edge_count = 0;
-//	for (int i = 0; i < this->l_genes.size(); i++) {
-//		LGene * gene = &this->l_genes[i];
-//		if (gene->enabled) {
-//			//create edge according to each gene
-//			Edge* edge = new Edge();
-//			network->edges[edge_count] = *edge;
-//			int id = gene->node_out;
-//			if (network->nodes.count(id) == 0) {
-//				Node * node = new Node();
-//				network->nodes[id] = *node;
-//			}
-//
-//			network->nodes[id].edges_in.push_back(edge_count);
-//			network->nodes[id].vec_offset += gene->offset_vector;
-//
-//			edge_count++;
-//		}
-//	}
-//	//create node according to each gene's IN node
-//	edge_count = 0;
-//	for (int i = 0; i < this->l_genes.size(); i++) {
-//		LGene * gene = &this->l_genes[i];
-//		if (gene->enabled) {
-//
-//			if (network->nodes.count(gene->node_in) == 0) {
-//				Node * node = new Node();
-//				network->nodes[gene->node_in] = *node;
-//			}
-//			network->nodes[gene->node_out].edges_out.push_back(edge_count);
-//			edge_count++;
-//		}
-//	}
-//
-//	return *network;
-//
-//}
 
 int Genome::randomNeuron(bool inclInput, bool inclBias)
 {
@@ -532,50 +445,50 @@ void add_link_mutate(Genome * g) {
 }
 
 // add a new hidden or bias node mutation
-void add_node_mutate(Genome * g) {
-	int gene_num = g->l_genes.size();
+void add_node_mutate(Genome& g) {
+	int gene_num = g.l_genes.size();
 	if (gene_num == 0) {
 		return;
 	}
 	int random_id = random() * gene_num;
-	LGene * rand_gene = &g->l_genes[random_id];
-	if (!rand_gene->enabled) {
+	LGene rand_gene = g.l_genes[random_id];
+	if (!rand_gene.enabled) {
 		return;
 	}
 
 	bool isHidden = (random() < 0.9);
 	//add tgene for the node, whose position 
-	TGene * tg = new TGene();
+	TGene  tg ;
 	if (isHidden) {
-		g->hidden_n++;
-		tg->type = HIDDEN_NEURON;
+		g.hidden_n++;
+		tg.type = HIDDEN_NEURON;
 	}
 	else {
-		g->bias_n++;
-		tg->type = BIAS_NEURON;
+		g.bias_n++;
+		tg.type = BIAS_NEURON;
 	}
-	rand_gene->enabled = false;
-	TGene * out = &g->get_tgene_by_id(rand_gene->node_out);
+	rand_gene.enabled = false;
+	TGene out = g.get_tgene_by_id(rand_gene.node_out);
 	//copy offset and half both
-	for (int i = 0; i < out->offset.size(); i++) {
-		tg->offset.push_back(out->offset[i] / 2);
-		out->offset[i] = out->offset[i] / 2;
+	for (int i = 0; i < out.offset.size(); i++) {
+		tg.offset.push_back(out.offset[i] / 2);
+		out.offset[i] = out.offset[i] / 2;
 	}
 
 
-	LGene * gene1 = new LGene(*rand_gene);
-	gene1->node_out = g->hidden_n;
-	gene1->weight = 1;
-	gene1->enabled = true;
-	gene1->innovation = g->inno_func();
-	LGene * gene2 = new LGene(*rand_gene);
-	gene2->node_in = g->hidden_n;
-	gene2->enabled = true;
-	gene2->innovation = g->inno_func();
+	LGene gene1(rand_gene);
+	gene1.node_out = g.hidden_n;
+	gene1.weight = 1;
+	gene1.enabled = true;
+	gene1.innovation = g.inno_func();
+	LGene gene2(rand_gene);
+	gene2.node_in = g.hidden_n;
+	gene2.enabled = true;
+	gene2.innovation = g.inno_func();
 
-	g->l_genes.push_back(*gene1);
-	g->l_genes.push_back(*gene2);
-	g->t_genes.push_back(*tg);
+	g.l_genes.push_back(gene1);
+	g.l_genes.push_back(gene2);
+	g.t_genes.push_back(tg);
 
 }
 
@@ -671,11 +584,11 @@ void switch_link_mutate(Genome * g, bool on) {
 Genome fromMutate(const Genome& g, int(*inno_func)())
 {
 	double rate = g.configuration.probabilities.at("mutation");
-	Genome * mutant = new Genome(g);
+	Genome mutant(g);
 	if (random() < rate) {
-		const map<string, double>* p = &g.configuration.probabilities;
+		const map<string, double> p = g.configuration.probabilities;
 		//string mutations[] = { "lpoint_mutate","tpoint_mutate","rebase_mutate", "add_node_mutate", "add_link_mutate","switch_link_mutate"};
-		if (random() < p->at("lpoint_mutate")) {
+		if (random() < p.at("lpoint_mutate")) {
 			lpoint_mutate(mutant);
 		}
 		if (random() < p->at("tpoint_mutate")) {

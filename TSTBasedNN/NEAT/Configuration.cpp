@@ -74,6 +74,29 @@ Configuration::Configuration()
 	this->dweight_weight = 1 / 3;
 }
 
+Configuration::Configuration(const Configuration & obj)
+{
+	this->bias_n = obj.bias_n;
+	this->disjoint_weight = obj.disjoint_weight;
+	this->disposition_weight = obj.disposition_weight;
+	this->dweight_weight = obj.dweight_weight;
+	this->initial_weight_range = obj.initial_weight_range;
+	this->input_n = obj.input_n;
+	this->is_recurrent = obj.is_recurrent;
+	this->max_hidden_n = obj.max_hidden_n;
+	this->min_neuron_distance = obj.min_neuron_distance;
+	this->offset_bias_neuron_id = obj.offset_bias_neuron_id;
+	this->offset_hidden_neuron_id = obj.offset_hidden_neuron_id;
+	this->offset_output_neuron_id = obj.offset_output_neuron_id;
+	this->offset_input_neuron_id = obj.offset_input_neuron_id;
+	this->output_n = obj.output_n;
+	this->pool_population = obj.pool_population;
+	this->pool_quantity = obj.pool_quantity;
+	this->preset = Preset(obj.preset);
+	this->probabilities = obj.probabilities;
+	this->space_dimension = obj.space_dimension;
+}
+
 Configuration::Configuration(int input_n, int output_n)
 {
 	Configuration();

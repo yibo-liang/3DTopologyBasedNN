@@ -22,6 +22,8 @@ public:
 
 	void step(vector<double> inputs);
 
+	Network(const Network& obj);
+
 	Network();
 	
 	~Network();
