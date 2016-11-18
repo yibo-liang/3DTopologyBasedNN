@@ -448,22 +448,28 @@ void add_node_mutate(Genome& g) {
 
 	bool isHidden = (random() < 0.9);
 	//add tgene for the node, whose position 
-	TGene  tg ;
+	TGene  tg;
 	if (isHidden) {
+		tg.id = get_id_offset(HIDDEN_NEURON) + g.hidden_n;
 		g.hidden_n++;
 		tg.type = HIDDEN_NEURON;
 	}
 	else {
+		tg.id = get_id_offset(BIAS_NEURON) + g.bias_n;
 		g.bias_n++;
 		tg.type = BIAS_NEURON;
 	}
+	tg.innovation = g.inno_func();
 	rand_gene.enabled = false;
-	TGene out = g.get_tgene_by_id(rand_gene.node_out);
+	TGene& out = g.get_tgene_by_id(rand_gene.node_out);
 	//copy offset and half both
 	for (int i = 0; i < out.offset.size(); i++) {
 		tg.offset.push_back(out.offset[i] / 2);
 		out.offset[i] = out.offset[i] / 2;
 	}
+	out.base = tg.id;
+	//change the innovation of the node that is going to base on our new node
+	out.innovation = g.inno_func();
 
 
 	LGene gene1(rand_gene);
@@ -520,27 +526,32 @@ void tpoint_mutate(Genome& g) {
 
 
 vector<TGene> get_tgene_not_based_on(Genome& g, TGene& tg) {
-	vector<TGene> result;
+
 	vector<TGene> tgs = g.t_genes;
-	map<int, bool> result_map;
-	result.push_back(tg);
-	if (tg.base == -1) return result;
-	result_map[tg.id] = true;
+	vector<TGene> result;
+	map<int, bool> base_map;
+	base_map[tg.id] = true;
 	bool done = false;
-	int k = result_map.size();
+	int k = base_map.size();
 	while (!done) {
 		for (int i = 0; i < g.t_genes.size(); i++) {
 			TGene ptr_tg = g.t_genes[i];
-			if (result_map.count(ptr_tg.id) == 0 && result_map.count(ptr_tg.base)>0) {
-				result_map[ptr_tg.id] = true;
-				result.push_back(ptr_tg);
+			if (base_map.count(ptr_tg.id) == 0 && base_map.count(ptr_tg.base)>0) {
+				base_map[ptr_tg.id] = true;
+				//tgenes_based_on_tg.push_back(ptr_tg);
 			}
 		}
-		if (result_map.size() == k) {
+		if (base_map.size() == k) {
 			break;
 		}
 		else {
-			k = result_map.size();
+			k = base_map.size();
+		}
+	}
+	for (int i = 0; i < g.t_genes.size(); i++) {
+		TGene tg = g.t_genes[i];
+		if (base_map.count(tg.id) == 0 && tg.enabled) {
+			result.push_back(tg);
 		}
 	}
 	return result;
@@ -551,6 +562,7 @@ void rebase_mutate(Genome& g) {
 	TGene tg = g.t_genes[select];
 	if (!tg.fixed) { // if not a fixed node
 		vector<TGene> choices = get_tgene_not_based_on(g, tg);//choices of new base node
+		if (choices.size() == 0) return;
 		int new_base = random()*choices.size();
 		TGene nb = choices[new_base];
 		tg.base = nb.id;
@@ -561,7 +573,7 @@ void rebase_mutate(Genome& g) {
 void switch_link_mutate(Genome& g, bool on) {
 	vector<int> candidates;
 	for (int i = 0; i < g.l_genes.size(); i++) {
-		if (g.l_genes[i].enabled!=on) {
+		if (g.l_genes[i].enabled != on) {
 			candidates.push_back(i);
 		}
 	}
@@ -597,14 +609,111 @@ Genome fromMutate(const Genome& g, int(*inno_func)())
 			switch_link_mutate(mutant, false);
 		}
 		if (random() < p.at("on_switch_link_mutate")) {
-			switch_link_mutate(mutant,true);
+			switch_link_mutate(mutant, true);
 		}
 	}
 	return mutant;
 
 }
 
-Genome fromCrossOver(Genome g1, Genome g2, map<string, double> probabilities)
+Genome fromCrossOver(const Genome& g1, const Genome& g2)
 {
-	return g1;
+	//map to analyse innovation of both genome
+	map<int, TGene> inno_map_tgene;// innovation -> tgene
+	map<int, vector<int>> id_inno_map; // id -> [innovation]
+
+	//adding g1's tgene
+	for (int i = 0; i < g1.t_genes.size(); i++) {
+		inno_map_tgene[g1.t_genes[i].innovation] = TGene(g1.t_genes[i]);
+		//record its innovation with id
+		vector<int> tmp;
+		tmp.push_back(g1.t_genes[i].innovation);
+		id_inno_map[g1.t_genes[i].id] = tmp;
+	}
+
+	//adding g2's tgene, replace if it is better than g1's
+	for (int i = 0; i < g2.t_genes.size(); i++) {
+		TGene tg = g2.t_genes[i];
+		int id = tg.id;
+		int innovation = tg.innovation;
+		if (inno_map_tgene.count(innovation) > 0) {
+			if (g2.fitness > g1.fitness) {
+				inno_map_tgene[innovation] = TGene(g2.t_genes[i]);
+				id_inno_map[id].push_back(innovation);
+			}
+			else if (g2.fitness == g1.fitness && random() > 0.5) {
+				//if somehow both genomes have the same fitness, such as 0, randomly select one
+				inno_map_tgene[g2.t_genes[i].innovation] = TGene(g2.t_genes[i]);
+				//same as above, add its innovation 
+				id_inno_map[id].push_back(innovation);
+			}
+		}
+		else {
+			inno_map_tgene[innovation] = TGene(g2.t_genes[i]);
+			id_inno_map[id].push_back(innovation);
+		}
+	}
+
+	//get rid of the tgene that has duplicates with same id but different bases
+	vector<TGene> result_tgene;
+	for (auto it = id_inno_map.begin(); it != id_inno_map.end(); it++) {
+		int id = it->first;
+		vector<int> innovations = it->second;
+		//choose randomly
+		int select = random()*innovations.size();
+		result_tgene.push_back(inno_map_tgene[innovations[select]]);
+	}
+
+	struct inno_compare {
+		bool operator()(const TGene& tg1, const TGene& tg2) {
+			return tg1.innovation < tg2.innovation;
+		}
+	};
+	std::sort(result_tgene.begin(), result_tgene.end(), inno_compare());
+
+	//lgenes cross over
+	map<int, LGene> inno_map_lgene;
+	for (int i = 0; i < g1.l_genes.size(); i++) {
+		inno_map_lgene[g1.l_genes[i].innovation] = g1.l_genes[i];
+	}
+	for (int i = 0; i < g2.l_genes.size(); i++) {
+		LGene lg2 = g2.l_genes[i];
+		if (inno_map_lgene.count(lg2.innovation)>0) {
+			if (g2.fitness > g1.fitness) {
+				inno_map_lgene[lg2.innovation] = LGene(lg2);
+			}
+			else if (g2.fitness == g1.fitness && random()>0.5) {
+				inno_map_lgene[lg2.innovation] = LGene(lg2);
+			}
+		}
+		else {
+			inno_map_lgene[lg2.innovation] = LGene(lg2);
+		}
+	}
+	vector<LGene> result_lgene;
+	for (auto it = inno_map_lgene.begin(); it != inno_map_lgene.end(); it++) {
+		result_lgene.push_back(it->second);
+	}
+
+
+	Genome result_genome(g1);
+	result_genome.t_genes = result_tgene;
+	result_genome.l_genes = result_lgene;
+	//recount bias_n and hidden_n
+	int bias_n = 0;
+	int hidden_n = 0;
+	for (int i = 0; i < result_tgene.size(); i++) {
+		if (result_tgene[i].type == HIDDEN_NEURON) {
+			hidden_n++;
+		}
+		if (result_tgene[i].type == BIAS_NEURON) {
+			bias_n++;
+		}
+	}
+	result_genome.bias_n = bias_n;
+	result_genome.hidden_n = hidden_n;
+
+
+
+	return result_genome;
 }

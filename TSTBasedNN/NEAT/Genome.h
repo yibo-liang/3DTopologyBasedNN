@@ -55,7 +55,7 @@ private:
 
 //mutate method with innovation function
 Genome fromMutate(const Genome &g, int(*inno_func)());
-Genome fromCrossOver(Genome g1, Genome g2, map<string, double> probabilities);
+Genome fromCrossOver(const Genome& g1, const Genome& g2);
 
 
 
