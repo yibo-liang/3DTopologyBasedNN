@@ -23,7 +23,7 @@ public:
 	Pool();
 	~Pool();
 
-	void addToSpecies(Genome* genome);
+	void addToSpecies(Genome& genome);
 private:
 	int innovation;
 

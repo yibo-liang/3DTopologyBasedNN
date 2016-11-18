@@ -186,16 +186,6 @@ Genome::Genome(const Configuration& configuration)
 
 Genome::~Genome()
 {
-	this->network.~Network();
-	for (int i = 0; i < this->t_genes.size(); i++) {
-		delete &this->t_genes[i];
-	}
-	for (int i = 0; i < this->l_genes.size(); i++) {
-		delete &this->l_genes[i];
-	}
-	this->configuration.~Configuration();
-	delete &this->network;
-	delete &this->configuration;
 
 }
 
@@ -422,25 +412,25 @@ vector<double> vec_in_sphere_between(const vector<double> &vec1, const vector<do
 }
 
 //mutation that addes a new link(edge) between exisiting nodes
-void add_link_mutate(Genome * g) {
-	int n1 = g->randomNeuron(true, g->configuration.bias_n > 0);
-	int n2 = g->randomNeuron(false, false);
-	if (n1 == n2 && !g->configuration.is_recurrent) return;
-	LGene * new_lgene = new LGene();
-	new_lgene->node_in = n1;
-	new_lgene->node_out = n2;
-	if (g->containsLGene(*new_lgene)) {
+void add_link_mutate(Genome& g) {
+	int n1 = g.randomNeuron(true, g.configuration.bias_n > 0);
+	int n2 = g.randomNeuron(false, false);
+	if (n1 == n2 && !g.configuration.is_recurrent) return;
+	LGene new_lgene;
+	new_lgene.node_in = n1;
+	new_lgene.node_out = n2;
+	if (g.containsLGene(new_lgene)) {
 		return;
 	}
 
 
-	new_lgene->weight = random()
-		* g->configuration.initial_weight_range * 2
-		- g->configuration.initial_weight_range;
-	int innovation = g->inno_func();
-	new_lgene->innovation = innovation;
-	new_lgene->enabled = true;
-	g->l_genes.push_back(*new_lgene);
+	new_lgene.weight = random()
+		* g.configuration.initial_weight_range * 2
+		- g.configuration.initial_weight_range;
+	int innovation = g.inno_func();
+	new_lgene.innovation = innovation;
+	new_lgene.enabled = true;
+	g.l_genes.push_back(new_lgene);
 
 }
 
@@ -494,12 +484,12 @@ void add_node_mutate(Genome& g) {
 
 
 //change weight of a random link 
-void lpoint_mutate(Genome * g) {
-	double step = g->configuration.probabilities["step"];
+void lpoint_mutate(Genome& g) {
+	double step = g.configuration.probabilities["step"];
 
-	for (int i = 0; i < g->l_genes.size(); i++) {
-		LGene * gene = &g->l_genes[i];
-		if (random() < g->configuration.probabilities["w_purtubation"]) {
+	for (int i = 0; i < g.l_genes.size(); i++) {
+		LGene * gene = &g.l_genes[i];
+		if (random() < g.configuration.probabilities["w_purtubation"]) {
 			gene->weight = gene->weight + random()*step * 2 - step;
 		}
 		else {
@@ -519,30 +509,30 @@ void purtubate_vector(double step, double p_chance, vector<double> * vec) {
 	}
 }
 
-void tpoint_mutate(Genome * g) {
-	double step = g->configuration.probabilities["p_step"];
-	for (int i = 0; i < g->t_genes.size(); i++) {
-		TGene * gene = &g->t_genes[i];
-		double p_chance = g->configuration.probabilities["p_purtubation"];
+void tpoint_mutate(Genome& g) {
+	double step = g.configuration.probabilities["p_step"];
+	for (int i = 0; i < g.t_genes.size(); i++) {
+		TGene * gene = &g.t_genes[i];
+		double p_chance = g.configuration.probabilities["p_purtubation"];
 		purtubate_vector(step, p_chance, &(gene->offset));
 	}
 }
 
 
-vector<TGene*> get_tgene_not_based_on(Genome * g, TGene * tg) {
-	vector<TGene*> result;
-	vector<TGene>* tgs = &g->t_genes;
+vector<TGene> get_tgene_not_based_on(Genome& g, TGene& tg) {
+	vector<TGene> result;
+	vector<TGene> tgs = g.t_genes;
 	map<int, bool> result_map;
 	result.push_back(tg);
-	if (tg->base == -1) return result;
-	result_map[tg->id] = true;
+	if (tg.base == -1) return result;
+	result_map[tg.id] = true;
 	bool done = false;
 	int k = result_map.size();
 	while (!done) {
-		for (int i = 0; i < g->t_genes.size(); i++) {
-			TGene * ptr_tg = &g->t_genes[i];
-			if (result_map.count(ptr_tg->id) == 0 && result_map.count(ptr_tg->base)>0) {
-				result_map[ptr_tg->id] = true;
+		for (int i = 0; i < g.t_genes.size(); i++) {
+			TGene ptr_tg = g.t_genes[i];
+			if (result_map.count(ptr_tg.id) == 0 && result_map.count(ptr_tg.base)>0) {
+				result_map[ptr_tg.id] = true;
 				result.push_back(ptr_tg);
 			}
 		}
@@ -556,27 +546,27 @@ vector<TGene*> get_tgene_not_based_on(Genome * g, TGene * tg) {
 	return result;
 }
 
-void rebase_mutate(Genome * g) {
-	int select = random()*g->t_genes.size();
-	TGene * tg = &g->t_genes[select];
-	if (!tg->fixed) { // if not a fixed node
-		vector<TGene*> choices = get_tgene_not_based_on(g, tg);//choices of new base node
+void rebase_mutate(Genome& g) {
+	int select = random()*g.t_genes.size();
+	TGene tg = g.t_genes[select];
+	if (!tg.fixed) { // if not a fixed node
+		vector<TGene> choices = get_tgene_not_based_on(g, tg);//choices of new base node
 		int new_base = random()*choices.size();
-		TGene * nb = choices[new_base];
-		tg->base = nb->id;
-		tg->innovation = g->inno_func();//assign new innovation number since the base changes.
+		TGene nb = choices[new_base];
+		tg.base = nb.id;
+		tg.innovation = g.inno_func();//assign new innovation number since the base changes.
 	}
 }
 
-void switch_link_mutate(Genome * g, bool on) {
+void switch_link_mutate(Genome& g, bool on) {
 	vector<int> candidates;
-	for (int i = 0; i < g->l_genes.size(); i++) {
-		if (g->l_genes[i].enabled!=on) {
+	for (int i = 0; i < g.l_genes.size(); i++) {
+		if (g.l_genes[i].enabled!=on) {
 			candidates.push_back(i);
 		}
 	}
 	int choice = candidates[random()* candidates.size()];
-	g->l_genes[choice].enabled = on;
+	g.l_genes[choice].enabled = on;
 }
 
 
@@ -591,25 +581,30 @@ Genome fromMutate(const Genome& g, int(*inno_func)())
 		if (random() < p.at("lpoint_mutate")) {
 			lpoint_mutate(mutant);
 		}
-		if (random() < p->at("tpoint_mutate")) {
+		if (random() < p.at("tpoint_mutate")) {
 			tpoint_mutate(mutant);
 		}
-		if (random() < p->at("rebase_mutate")) {
+		if (random() < p.at("rebase_mutate")) {
 			rebase_mutate(mutant);
 		}
-		if (random() < p->at("add_node_mutate")) {
+		if (random() < p.at("add_node_mutate")) {
 			add_node_mutate(mutant);
 		}
-		if (random() < p->at("add_link_mutate")) {
+		if (random() < p.at("add_link_mutate")) {
 			add_link_mutate(mutant);
 		}
-		if (random() < p->at("off_switch_link_mutate")) {
+		if (random() < p.at("off_switch_link_mutate")) {
 			switch_link_mutate(mutant, false);
 		}
-		if (random() < p->at("on_switch_link_mutate")) {
+		if (random() < p.at("on_switch_link_mutate")) {
 			switch_link_mutate(mutant,true);
 		}
 	}
-	return *mutant;
+	return mutant;
 
+}
+
+Genome fromCrossOver(Genome g1, Genome g2, map<string, double> probabilities)
+{
+	return g1;
 }
