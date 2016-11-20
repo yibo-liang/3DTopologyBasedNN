@@ -4,6 +4,7 @@
 #define TOPOLOGYGENE
 
 #include <vector>
+#include "../NN/Signal.h"
 using namespace std;
 class TGene
 {
@@ -21,7 +22,7 @@ public:
 	vector<double> offset;
 	//Activation function of this neuron, which could have been changed by user or evolution process
 	//takes a vector of double input, returns a double
-	double(*activation)(vector<double>);
+	double(*activation)(vector<Signal>);
 
 	TGene(const TGene &obj);
 

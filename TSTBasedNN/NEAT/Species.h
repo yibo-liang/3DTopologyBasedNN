@@ -3,7 +3,7 @@
 #ifndef SPECIES
 #define SPECIES
 
-#include <list>
+#include <vector>
 #include "Genome.h"
 
 using namespace std;

@@ -4,7 +4,8 @@
 #define EXPERIMENT
 
 #include <map>
-#include <list>
+#include <vector>
+#include "Configuration.h"
 #include "Pool.h"
 
 using namespace std;
@@ -31,7 +32,7 @@ public:
 
 
 	
-	list<Pool> pools;
+	vector<Pool> pools;
 
 	
 
@@ -41,8 +42,6 @@ public:
 	~Experiment();
 
 	void init();
-
-	Network generateNeuralNetwork(Genome genome);
 
 
 private:
