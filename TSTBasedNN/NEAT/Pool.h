@@ -3,7 +3,7 @@
 #ifndef POOL
 #define POOL
 
-#include <list>
+#include <vector>
 #include "Genome.h"
 #include "Species.h"
 
@@ -11,12 +11,13 @@ class Pool
 {
 public:
 	//list of species, remember to delete every single of them when distructing
-	list<Species> species;
+	vector<Species> species;
 	int generation;
 	int resetInnovation();
 	int getInnovation();
 
-	
+
+	Genome(*GASelection)(vector<Genome>);//Selection function for Genetic Algorithm
 
 	void newGeneration();
 
