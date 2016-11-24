@@ -81,7 +81,7 @@ double Genome::weightCompare(Genome g1, Genome g2)
 	for (auto it = genes2->begin(); it != genes2->end(); it++) {
 		i2[it->innovation] = *it;
 	}
-	double sum = 0;
+	double sum = 0;/*
 	double coincident = 0;
 	for (auto it = genes1->begin(); it != genes1->end(); it++) {
 		LGene gene1 = *it;
@@ -90,9 +90,11 @@ double Genome::weightCompare(Genome g1, Genome g2)
 			sum = sum + abs(gene2.weight - gene1.weight);
 			coincident++;
 		}
-	}
+	}*/
 	if (sum == 0) return 0;
-	return sum / coincident;
+
+	double N = max(g1.l_genes.size(), g2.l_genes.size());
+	return sum / N;
 }
 
 vector<double> randomVec(int dim) {
@@ -126,7 +128,7 @@ double Genome::dispositionCompare(Genome g1, Genome g2)
 	for (int i = 0; i < genes2.size(); i++) {
 		i2[genes2[i].innovation] = genes2[i];
 	}
-	double sum = 0;
+	double sum = 0;/*
 	double coincident = 0;
 	for (int i = 0; i < genes1.size();i++) {
 		TGene gene = genes1[i];
@@ -135,10 +137,10 @@ double Genome::dispositionCompare(Genome g1, Genome g2)
 			sum += distance(gene.offset, gene2.offset);
 			coincident++;
 		}
-	}
-
+	}*/
+	double N = max(g1.t_genes.size(), g2.t_genes.size());
 	if (sum == 0) return 0;
-	return sum / coincident;
+	return sum / N;
 }
 
 bool Genome::isSameSpecies(const Genome& another)

@@ -28,7 +28,7 @@ double gaussian_activation(vector<Signal> sigs)
 	return tanh(result / 2);
 }
 
-double Node::activate(int step)
+double Node::activate(int step, void(*notice)())
 {
 
 	double result = 0;
@@ -67,6 +67,15 @@ double Node::activate(int step)
 	}
 
 	this->current_val = result;
+
+	//save the result;
+	if (this->type == OUTPUT_NEURON) {
+		if (activation_start == 0) {
+			activation_start = activated_step;
+		}
+		activation_results.push_back(result);
+		notice();
+	}
 	return result;
 }
 

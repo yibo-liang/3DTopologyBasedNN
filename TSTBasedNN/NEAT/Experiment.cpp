@@ -11,6 +11,7 @@ using namespace std;
 
 Experiment::Experiment()
 {
+	this->configuration = Configuration();
 }
 
 Experiment::Experiment(Configuration config)

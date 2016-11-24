@@ -20,17 +20,6 @@ public:
 	//experiment configuration
 	Configuration configuration;
 	
-
-	map<string, double> probabilities; //probabilities for mutations
-
-	// link
-	// bias
-	// node
-	// expressing
-	// step
-	// offset_range
-
-
 	
 	vector<Pool> pools;
 

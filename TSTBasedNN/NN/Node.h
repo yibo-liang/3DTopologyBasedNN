@@ -26,9 +26,12 @@ public:
 
 	vector<Signal> activation_signals;
 
+	vector<double> activation_results;
+	int activation_start=0;
+
 	double(*activation)(vector<Signal>);
 
-	double activate(int step);
+	double activate(int step, void(*notice)());
 	bool wake();
 	double get_current_activation_value();
 

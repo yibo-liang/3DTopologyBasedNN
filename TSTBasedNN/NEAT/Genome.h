@@ -20,7 +20,7 @@ public:
 	vector<TGene> t_genes;
 
 	double fitness;
-	double adjusted_fitness;
+	double shared_fitness;
 	Network network;
 
 	Configuration configuration;
