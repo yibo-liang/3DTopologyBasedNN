@@ -9,4 +9,7 @@ namespace constants {
 	const int DEFAULT_ACTIVATION_INTERVAL = 0;
 	const int MIN_ACTIVATION_INTERVAL = 0;
 	const int MAX_ACTIVATION_INTERVAL = 0;
+
+	const int EVALUATE_PER_NODE = 1001;
+	const int EVALUATE_PER_STEP = 1002;
 }

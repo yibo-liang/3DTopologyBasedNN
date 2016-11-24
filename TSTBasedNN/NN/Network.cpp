@@ -25,8 +25,8 @@ void Network::step(vector<double> inputs)
 			continue;
 		}
 
-		double strength=it->second.activate(this->current_step);
-		
+		double strength = it->second.activate(this->current_step);
+
 		for (int i = 0; i < it->second.edges_out.size(); i++) {
 			int edge_i = it->second.edges_out[i];
 			Signal sig;
@@ -39,7 +39,6 @@ void Network::step(vector<double> inputs)
 
 	//all step edges
 	for (auto it = this->edges.begin(); it != this->edges.end(); it++) {
-
 		//for signals in each edge
 		auto nit = it->second.transmitting_signals.begin();
 		while (nit != it->second.transmitting_signals.end()) {
