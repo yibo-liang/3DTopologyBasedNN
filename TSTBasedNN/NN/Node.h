@@ -4,6 +4,7 @@
 #define NODE
 
 #include "Signal.h"
+#include "globals.h"
 #include <vector>
 
 using namespace std;
@@ -14,7 +15,9 @@ public:
 
 	int id;
 	
-	string type;
+	int type;
+
+	int activation_interval = constants::DEFAULT_ACTIVATION_INTERVAL;
 
 	vector<double> position;
 
@@ -23,13 +26,24 @@ public:
 
 	vector<Signal> activation_signals;
 
-	double(*activation)(vector<double>);
+	double(*activation)(vector<Signal>);
+
+	double activate(int step);
+	bool wake();
+	double get_current_activation_value();
+
+	void add_signal(Signal sig);
+
 	Node(const Node& obj);
 	Node();
 	~Node();
 
 private:
-
+	double current_val=0;
+	int activated_step=0;
+	int sleep_interval = 0;//will be incremented by min interval
 };
+
+double gaussian_activation(vector<Signal> sigs);
 
 #endif // !NODE

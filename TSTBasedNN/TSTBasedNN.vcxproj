@@ -158,6 +158,7 @@
     <ClInclude Include="NEAT\Preset.h" />
     <ClInclude Include="NEAT\TGene.h" />
     <ClInclude Include="NN\Edge.h" />
+    <ClInclude Include="NN\globals.h" />
     <ClInclude Include="NN\Network.h" />
     <ClInclude Include="NN\Node.h" />
     <ClInclude Include="NN\Signal.h" />

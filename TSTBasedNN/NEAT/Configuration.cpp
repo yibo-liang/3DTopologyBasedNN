@@ -1,7 +1,8 @@
 
 #include "Configuration.h"
+#include "globals.h"
 
-
+using namespace constants;
 bool Configuration::is_preset_id(int id)
 {
 	return false;

@@ -16,7 +16,7 @@ public:
 	int innovation;
 	int node_in;
 	int node_out;
-	int enabled;
+	bool enabled;
 	double weight;
 
 	LGene(const LGene &obj);

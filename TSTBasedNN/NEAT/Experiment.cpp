@@ -2,7 +2,6 @@
 
 #include "Genome.h"
 
-#include "Configuration.h"
 #include "Experiment.h"
 
 #include <map>
@@ -34,21 +33,4 @@ void Experiment::init()
 		}
 		this->pools.push_back(npool);
 	}
-}
-
-Network Experiment::generateNeuralNetwork(Genome genome)
-{
-	Network network;
-	Configuration config = this->configuration;
-
-	for (int i = 0; i < genome.configuration.input_n; i++) {
-		Node node;
-		node.id = i;
-		node.type = "input";
-		network.nodes[i] = node;
-
-	}
-	
-
-	return network;
 }

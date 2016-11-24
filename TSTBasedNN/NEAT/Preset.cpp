@@ -1,10 +1,10 @@
 
 #include "Preset.h"
+#include "globals.h"
 
-
-void Preset::add_t_gene(int id, int base, int neuron_type, double(*activation)(vector<double>), vector<double> offset)
+void Preset::add_t_gene(int id, int base, int neuron_type, double(*activation)(vector<Signal>), vector<double> offset)
 {
-	int id_offset = get_id_offset(neuron_type);
+	int id_offset = constants::get_id_offset(neuron_type);
 	TGene tg;
 	tg.id = id + id_offset;
 	tg.base = base;
@@ -17,7 +17,7 @@ void Preset::add_t_gene(int id, int base, int neuron_type, double(*activation)(v
 
 void Preset::add_l_gene(int node_in, int node_in_type, int node_out, int node_out_type, double weight)
 {
-	add_l_gene(node_in, node_in_type, node_out, node_out_type, true);
+	add_l_gene(node_in, node_in_type, node_out, node_out_type,weight, true);
 }
 
 
@@ -25,8 +25,8 @@ void Preset::add_l_gene(int node_in, int node_in_type, int node_out, int node_ou
 void Preset::add_l_gene(int node_in, int node_in_type, int node_out, int node_out_type, double weight, bool enabled)
 {
 
-	int in_offset = get_id_offset(node_in_type);
-	int out_offset = get_id_offset(node_out_type);
+	int in_offset = constants::get_id_offset(node_in_type);
+	int out_offset = constants::get_id_offset(node_out_type);
 	LGene lg;
 	lg.node_in = node_in + in_offset;
 	lg.node_out = node_out + out_offset;

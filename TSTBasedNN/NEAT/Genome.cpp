@@ -1,20 +1,20 @@
-#include "../stdafx.h"
 
 #include "Configuration.h"
 #include "Genome.h"
+#include "globals.h"
 
 #include <iostream>
 #include <vector>
+#include <iterator>
 #include <assert.h>
 #include <algorithm>
 #include <functional>
-#include <ctime>
-#include <iterator>
 #include <string>
 
+using namespace constants;
 template <typename T>
 //vector operator for addition
-std::vector<T> operator+=(std::vector<T>& a, std::vector<T>& b)
+std::vector<T> operator+=(std::vector<T> a, std::vector<T> b)
 {
 	assert(a.size() == b.size());
 
@@ -24,20 +24,16 @@ std::vector<T> operator+=(std::vector<T>& a, std::vector<T>& b)
 }
 
 template <typename T>
-std::vector<T> operator+(std::vector<T>& a, std::vector<T>& b)
+std::vector<T> operator+(const std::vector<T> a, const std::vector<T> b)
 {
 	assert(a.size() == b.size());
-	vector<T> c;
-	std::transform(a.begin(), a.end(), b.begin(), std::back_inserter(c),
-		[](double a, double b) { return fabs(a + b); });
-	return c;
-}
 
+	std::vector<T> result;
+	result.reserve(a.size());
 
-double random() {
-	unsigned int time_ui = unsigned int(time(NULL));
-	srand(time_ui);
-	return ((double)rand() / (RAND_MAX));
+	std::transform(a.begin(), a.end(), b.begin(),
+		std::back_inserter(result), std::plus<T>());
+	return result;
 }
 
 double Genome::disjointCompare(Genome g1, Genome g2)
@@ -124,16 +120,16 @@ double distance(vector<double> v1, vector<double> v2) {
 
 double Genome::dispositionCompare(Genome g1, Genome g2)
 {
-	vector<TGene> * genes1 = &g1.t_genes;
-	vector<TGene> * genes2 = &g2.t_genes;
+	vector<TGene> genes1 = g1.t_genes;
+	vector<TGene> genes2 = g2.t_genes;
 	map<int, TGene> i2;
-	for (vector<TGene>::iterator it = genes2->begin(); it != genes2->end(); it++) {
-		i2[it->innovation] = *it;
+	for (int i = 0; i < genes2.size(); i++) {
+		i2[genes2[i].innovation] = genes2[i];
 	}
 	double sum = 0;
 	double coincident = 0;
-	for (auto it = genes1->begin(); it != genes1->end(); it++) {
-		TGene gene = *it;
+	for (int i = 0; i < genes1.size();i++) {
+		TGene gene = genes1[i];
 		if (i2.count(gene.innovation) > 0) {
 			TGene gene2 = i2[gene.innovation];
 			sum += distance(gene.offset, gene2.offset);
@@ -345,8 +341,15 @@ Network Genome::toNeuralNetwork()
 		edge.node_in = this->l_genes[i].node_in;
 		edge.node_out = this->l_genes[i].node_out;
 		edge.length = distance(network.nodes[edge.node_in].position, network.nodes[edge.node_out].position);
+		//assign edge_in edge_out for connected node of this edge
+		network.nodes[edge.node_in].edges_out.push_back(edge.id);
+		network.nodes[edge.node_out].edges_in.push_back(edge.id);
 		network.edges[edge.id] = edge;
 	}
+	
+
+	network.configuration = Configuration(this->configuration);
+
 	return network;
 }
 
