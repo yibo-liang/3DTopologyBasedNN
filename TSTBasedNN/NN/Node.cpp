@@ -28,7 +28,7 @@ double gaussian_activation(vector<Signal> sigs)
 	return tanh(result / 2);
 }
 
-double Node::activate(int step, void(*notice)())
+double Node::activate(int step)
 {
 
 	double result = 0;
@@ -74,7 +74,6 @@ double Node::activate(int step, void(*notice)())
 			activation_start = activated_step;
 		}
 		activation_results.push_back(result);
-		notice();
 	}
 	return result;
 }

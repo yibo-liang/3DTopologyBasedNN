@@ -3,6 +3,7 @@
 #include "Genome.h"
 #include "globals.h"
 
+#include "Innovation.h"
 #include <iostream>
 #include <vector>
 #include <iterator>
@@ -34,6 +35,17 @@ std::vector<T> operator+(const std::vector<T> a, const std::vector<T> b)
 	std::transform(a.begin(), a.end(), b.begin(),
 		std::back_inserter(result), std::plus<T>());
 	return result;
+}
+
+int Genome::inno_func()
+{
+	return Innovation::instance()->getInnovation(this->pool_id);
+}
+
+int Genome::reset_inno()
+{
+	Innovation::instance()->resetInnovation(this->pool_id);
+	return 0;
 }
 
 double Genome::disjointCompare(Genome g1, Genome g2)
@@ -160,6 +172,7 @@ bool Genome::isSameSpecies(const Genome& another)
 Genome::Genome(const Genome & obj)
 {
 	//copy
+
 	for (int i = 0; i < obj.t_genes.size(); i++) {
 		TGene tg(obj.t_genes[i]);
 		this->t_genes.push_back(tg);
@@ -168,11 +181,9 @@ Genome::Genome(const Genome & obj)
 		LGene lg(obj.l_genes[i]);
 		this->l_genes.push_back(lg);
 	}
-
+	this->pool_id = obj.pool_id;
 	this->bias_n = obj.bias_n;
 	this->hidden_n = obj.hidden_n;
-	this->inno_func = obj.inno_func;
-	this->reset_inno = obj.reset_inno;
 
 }
 
@@ -588,7 +599,7 @@ void switch_link_mutate(Genome& g, bool on) {
 
 
 
-Genome fromMutate(const Genome& g, int(*inno_func)())
+Genome fromMutate(const Genome& g)
 {
 	double rate = g.configuration.probabilities.at("mutation");
 	Genome mutant(g);

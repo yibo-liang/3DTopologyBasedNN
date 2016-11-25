@@ -46,6 +46,8 @@ public:
 
 	int get_node_type_from_id(int id);
 
+	bool is_elitism=true;
+
 	Preset preset;
 
 	Configuration();

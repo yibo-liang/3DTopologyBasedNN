@@ -6,8 +6,6 @@
 
 int main()
 {
-	Experiment exp1;
-	exp1.init();
     return 0;
 }
 

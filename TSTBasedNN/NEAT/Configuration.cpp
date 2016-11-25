@@ -49,6 +49,7 @@ Configuration::Configuration()
 	this->offset_hidden_neuron_id = 20000;
 	this->offset_output_neuron_id = 30000;
 	
+	this->probabilities["crossover"] = 0.7;
 	this->probabilities["mutation"] = 0.50;
 	
 	this->probabilities["lpoint_mutate"] = 0.02; //mutate link's weight
@@ -96,6 +97,7 @@ Configuration::Configuration(const Configuration & obj)
 	this->preset = Preset(obj.preset);
 	this->probabilities = obj.probabilities;
 	this->space_dimension = obj.space_dimension;
+	this->is_elitism = obj.is_elitism;
 }
 
 Configuration::Configuration(int input_n, int output_n)

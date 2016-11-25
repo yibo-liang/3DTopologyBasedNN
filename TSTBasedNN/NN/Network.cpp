@@ -32,7 +32,7 @@ void Network::step()
 			continue;
 		}
 
-		double strength = it->second.activate(this->current_step, this->notice_output);
+		double strength = it->second.activate(this->current_step);
 
 		for (int i = 0; i < it->second.edges_out.size(); i++) {
 			int edge_i = it->second.edges_out[i];

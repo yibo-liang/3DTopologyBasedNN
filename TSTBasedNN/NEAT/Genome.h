@@ -3,10 +3,11 @@
 #ifndef GENOME
 #define GENOME
 
+
+#include <map>
 #include "Configuration.h"
 #include "LGene.h"
 #include "TGene.h"
-#include <map>
 #include <vector>
 #include "../NN/Network.h"
 
@@ -15,6 +16,8 @@ using namespace std;
 class Genome
 {
 public:
+
+	int pool_id;
 
 	vector<LGene> l_genes;
 	vector<TGene> t_genes;
@@ -28,8 +31,8 @@ public:
 	int bias_n;
 
 	//ptr of innovation function of the pool this genome blongs
-	int(*inno_func)();
-	int(*reset_inno)();
+	int inno_func();
+	int reset_inno();
 
 	double disjointCompare(Genome g1, Genome g2);
 	double weightCompare(Genome g1, Genome g2);
@@ -54,7 +57,7 @@ private:
 };
 
 //mutate method with innovation function
-Genome fromMutate(const Genome &g, int(*inno_func)());
+Genome fromMutate(const Genome &g);
 Genome fromCrossOver(const Genome& g1, const Genome& g2);
 
 
