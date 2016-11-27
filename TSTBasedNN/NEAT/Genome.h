@@ -22,6 +22,8 @@ public:
 	vector<LGene> l_genes;
 	vector<TGene> t_genes;
 
+	string mutation_record="";
+
 	double fitness;
 	double shared_fitness;
 	Network network;
@@ -50,6 +52,8 @@ public:
 	int randomNeuron(bool inclInput, bool inclBias);
 	bool containsLGene(const LGene& lgene);
 	TGene& get_tgene_by_id(int id);
+
+
 
 private:
 

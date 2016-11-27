@@ -39,8 +39,8 @@ public:
 	~Network();
 
 private:
-	int current_step;
-	int signal_count;
+	int current_step=0;
+	int signal_count=0;
 	bool _got_output=false;
 };
 double evaluate_network_on_each_node(

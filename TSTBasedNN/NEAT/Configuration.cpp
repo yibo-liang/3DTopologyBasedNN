@@ -49,16 +49,16 @@ Configuration::Configuration()
 	this->offset_hidden_neuron_id = 20000;
 	this->offset_output_neuron_id = 30000;
 	
-	this->probabilities["crossover"] = 0.7;
-	this->probabilities["mutation"] = 0.50;
+	this->probabilities["crossover"] = 1;
+	this->probabilities["mutation"] = 1;
 	
-	this->probabilities["lpoint_mutate"] = 0.02; //mutate link's weight
-	this->probabilities["tpoint_mutate"] = 0.02; //bias weight
-	this->probabilities["add_node_mutate"] = 0.02; //add node
-	this->probabilities["add_link_mutate"] = 0.02; //add node
-	this->probabilities["rebase_mutate"] = 0.02; //add node
-	this->probabilities["off_switch_link_mutate"] = 0.02; // disable or enable a link
-	this->probabilities["on_switch_link_mutate"] = 0.02; // disable or enable a link
+	this->probabilities["lpoint_mutate"] = 1; //mutate link's weight
+	this->probabilities["tpoint_mutate"] = 1; //bias weight
+	this->probabilities["add_node_mutate"] = 1; //add node
+	this->probabilities["add_link_mutate"] = 1; //add node
+	this->probabilities["rebase_mutate"] = 1; //add node
+	this->probabilities["off_switch_link_mutate"] = 1; // disable or enable a link
+	this->probabilities["on_switch_link_mutate"] = 1; // disable or enable a link
 
 	this->probabilities["step"] = 0.05;
 	//this->probabilities["offset_range"] = 0.02;

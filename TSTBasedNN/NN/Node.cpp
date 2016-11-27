@@ -2,6 +2,7 @@
 #include <math.h>
 #include "Node.h"
 #include "globals.h"
+#include "Signal.h"
 #include "../NEAT/globals.h"
 
 using namespace constants;
@@ -24,6 +25,7 @@ double gaussian_activation(vector<Signal> sigs)
 	double result = 0;
 	for (int i = 0; i < sigs.size(); i++) {
 		result += normal_pdf<double>(sigs[i].age, 0, 0.5)*sigs[i].strength;
+
 	}
 	return tanh(result / 2);
 }
@@ -54,6 +56,9 @@ double Node::activate(int step)
 	}
 	else if (this->type == OUTPUT_NEURON || this->type == HIDDEN_NEURON) {
 		result = this->activation(this->activation_signals);
+		for (int i = 0; i < this->activation_signals.size(); i++) {
+			activation_signals[i].age++;
+		}
 	}
 
 	//remove signals that are recevied long time ago by this node
@@ -75,16 +80,17 @@ double Node::activate(int step)
 		}
 		activation_results.push_back(result);
 	}
+	this->activated_step++;
 	return result;
 }
 
 bool Node::wake()
 {
 
-	this->activated_step++;
 	this->sleep_interval--;
 	if (this->sleep_interval <= 0) {
 		this->sleep_interval = 0;
+
 		return true;
 	}
 	return false;

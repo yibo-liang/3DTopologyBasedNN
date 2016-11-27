@@ -25,6 +25,10 @@ public:
 	void newGeneration();
 	void addToSpecies(Genome & genome);
 
+	void set_inputs(vector<vector<double>> inputs);
+	void set_outputs(vector<vector<double>> inputs);
+
+
 	Pool(const Pool& obj);
 	Pool();
 	~Pool();

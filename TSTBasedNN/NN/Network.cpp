@@ -64,6 +64,7 @@ void Network::step()
 		}
 
 	}
+	this->current_step++;
 }
 
 void Network::step_with_input(vector<double> inputs)
@@ -94,6 +95,9 @@ int Network::new_signal_id()
 
 Network::Network(const Network & obj)
 {
+	this->configuration = obj.configuration;
+	this->current_step = obj.current_step;
+	this->signal_count = obj.signal_count;
 	for (auto it = this->edges.begin(); it != this->edges.end(); it++) {
 		this->edges[it->first] = Edge(it->second);
 	}
@@ -129,6 +133,9 @@ vector<vector<double>> get_network_result_on_each_node(Network& network, int out
 			int offset = j*output_step_count;
 			//for every step_count results, calculate an average value as the value of that single output value
 			for (int k = 0; k < output_step_count; k++) {
+				if (node.activation_results.size() <= k + offset) {
+					val += 0;
+				}else
 				val += node.activation_results[k + offset];
 			}
 			val = val / (double)output_step_count;

@@ -2,17 +2,17 @@
 #include "Preset.h"
 #include "globals.h"
 
-void Preset::add_t_gene(int id, int base, int neuron_type, double(*activation)(vector<Signal>), vector<double> offset)
+void Preset::add_t_gene(int id, int base, int neuron_type, vector<double> offset)
 {
 	int id_offset = constants::get_id_offset(neuron_type);
 	TGene tg;
 	tg.id = id + id_offset;
 	tg.base = base;
-	tg.activation = activation;
+	tg.type = neuron_type;
 	for (int i = 0; i < offset.size(); i++) {
 		tg.offset.push_back(offset[i]);
 	}
-	this->preset_t[id] = tg;
+	this->preset_t[id+id_offset] = tg;
 }
 
 void Preset::add_l_gene(int node_in, int node_in_type, int node_out, int node_out_type, double weight)

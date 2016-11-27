@@ -6,6 +6,7 @@
 #include <ctime>
 #include <random>
 #include <iostream>
+
 namespace constants {
 	const int offset_input_neuron_id = 0;
 	const int offset_bias_neuron_id = 10000;
@@ -25,14 +26,18 @@ namespace constants {
 		std::cout << "Neuron Type Error: " << type;
 		return 0;
 	};
-
+	
 	const double MIN_EDGE_LENGTH = 0.5;// The minimum length that an edge will be treated, that is, if an edge length is 0.1, will be regarded as 0.5 in calculation
 	//this is for the reason that if there is a sequence of very short edge, a signal might be travelling through multiple node in single time step, which defy the definition of single 1 time step
-
-	static double random() {
+	static void init_random() {
 		unsigned int time_ui = unsigned int(time(NULL));
 		srand(time_ui);
-		return ((double)rand() / (RAND_MAX));
+	}
+
+	static double random() {
+		double result= ((double)rand() / (RAND_MAX));
+		//std::cout << result << std::endl;
+		return result;
 	}
 
 

@@ -21,7 +21,7 @@ Genome tournament_selection(vector<Genome>& genomes)
 	for (int i = 0; i < tournament_size; i++) {
 		selected.push_back(genomes[floor(constants::random()*genomes.size())]);
 	}
-	Genome result = selected[0];
+	Genome& result = selected[0];
 	for (int i = 1; i < selected.size(); i++) {
 		if (result.shared_fitness < selected[i].shared_fitness) {
 			result = selected[i];
@@ -40,6 +40,7 @@ void Pool::newGeneration()
 	//selection + crossover
 	//mutation
 	//eliticism
+	cout << "Generation: " << this->generation << endl;
 	double fit_sum = 0;
 	for (int sp_i = 0; sp_i < species.size(); sp_i++) {
 		Species& sp = species[sp_i];
@@ -68,31 +69,34 @@ void Pool::newGeneration()
 		int n = sp.genomes[0].shared_fitness / fit_sum * population; // the number of genome from this species in next generation
 		if (n < 1 && sp.staleness> 15) n = 1;
 		for (int i = 0; i < n; i++) {
-			Genome * g1;
-			Genome * g2;
+
+			vector<Genome> gs;
 			//if adoption
 			if (random() < this->adoption_rate) {
 				int alien_si = (int)(random()*species.size());
-				g1 = &tournament_selection(species[alien_si].genomes);
+				gs.push_back( tournament_selection(species[alien_si].genomes));
 			}
 			else {
-				g1 = &tournament_selection(sp.genomes);
+				gs.push_back(tournament_selection(sp.genomes));
 			}
-			g2 = &tournament_selection(sp.genomes);
+			gs.push_back( tournament_selection(sp.genomes));
 
 			if (random() < this->configuration.probabilities["crossover"]) {
-				new_generation.push_back(fromCrossOver(*g1, *g2));
+				Genome g = fromCrossOver(gs[0], gs[1]);
+				new_generation.push_back(g);
 			}
 			else {
-				new_generation.push_back(random() > 0.5 ? *g1 : *g2);
+				new_generation.push_back(random() > 0.5 ? gs[0] : gs[1]);
 			}
 		}
 	}
-
+	//mutation and add to next generation
 	this->species.clear();
 	for (int i = 0; i < new_generation.size(); i++) {
-		this->addToSpecies(new_generation[i]);
+		Genome& g = new_generation[i];
+		this->addToSpecies(fromMutate(g));
 	}
+	this->generation++;
 
 
 }
@@ -149,4 +153,14 @@ void Pool::addToSpecies(Genome& g)
 		g.pool_id = this->pool_id;
 		species[sp_i].genomes.push_back(g);
 	}
+}
+
+void Pool::set_inputs(vector<vector<double>> inputs)
+{
+	this->inputs = inputs;
+}
+
+void Pool::set_outputs(vector<vector<double>> outputs)
+{
+	this->outputs = outputs;
 }
