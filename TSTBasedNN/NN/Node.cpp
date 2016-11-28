@@ -56,11 +56,12 @@ double Node::activate(int step)
 	}
 	else if (this->type == OUTPUT_NEURON || this->type == HIDDEN_NEURON) {
 		result = this->activation(this->activation_signals);
-		for (int i = 0; i < this->activation_signals.size(); i++) {
-			activation_signals[i].age++;
-		}
+		
+		
 	}
-
+	for (int i = 0; i < this->activation_signals.size(); i++) {
+		activation_signals[i].age++;
+	}
 	//remove signals that are recevied long time ago by this node
 	for (auto it = this->activation_signals.begin(); it != this->activation_signals.end();) {
 		if (it->age > MAX_NEURON_ACTIVATION_SIGNAL_TIME) {
@@ -125,7 +126,7 @@ Node::Node(const Node & obj)
 	this->edges_out = obj.edges_in;
 	this->activation_signals = obj.activation_signals;
 	this->id = obj.id;
-	this->position = obj.position;
+	this->position = vector<double>(obj.position);
 	this->type = obj.type;
 }
 

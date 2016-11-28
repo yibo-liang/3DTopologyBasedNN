@@ -19,6 +19,7 @@ int main()
 	preset.add_t_gene(0, -1, INPUT_NEURON, v1);
 	preset.add_t_gene(0, -1, OUTPUT_NEURON, v1);
 	Configuration config;
+	config.pool_population = 1;
 	config.load_preset(preset);
 	double PI = 3.141592653589793;
 	Pool pool;
@@ -36,7 +37,7 @@ int main()
 	pool.set_inputs(inputs_wrap);
 	pool.set_outputs(outputs_wrap);
 
-	for (int i = 0; i < 50; i++) {
+	for (int i = 0; i < 1; i++) {
 		Genome g(config);
 		g.init();
 		pool.addToSpecies(g);

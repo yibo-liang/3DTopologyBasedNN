@@ -38,6 +38,8 @@ public:
 
 	~Network();
 
+	string toString();
+
 private:
 	int current_step=0;
 	int signal_count=0;

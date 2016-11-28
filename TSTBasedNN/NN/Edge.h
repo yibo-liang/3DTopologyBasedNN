@@ -4,7 +4,7 @@
 #define EDGE
 
 #include "Signal.h"
-#include <list>
+#include <vector>
 
 using namespace std;
 
@@ -17,7 +17,7 @@ public:
 	int node_out;
 	double length; //length as the multiplication of a single time step
 
-	list<Signal> transmitting_signals;
+	vector<Signal> transmitting_signals;
 	
 	Edge(const Edge& obj);
 	Edge();

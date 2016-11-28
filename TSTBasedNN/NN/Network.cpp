@@ -1,6 +1,10 @@
 
 #include "../NEAT/globals.h"
 #include "Network.h"
+#include <iostream>
+#include <sstream>
+#include <string>
+
 
 bool Network::got_output()
 {
@@ -24,7 +28,7 @@ vector<double> Network::get_current_outputs_val()
 
 void Network::step()
 {
-
+	//std::cout << "step:" << this->current_step << ", signal count=" << this->signal_count<<endl;
 	//firstly, activate all nodes, get the activation , insert into connected edges.
 	for (auto it = this->nodes.begin(); it != this->nodes.end(); it++) {
 
@@ -83,7 +87,6 @@ void Network::step_with_input(vector<double> inputs)
 	}
 	this->step();
 
-
 }
 
 int Network::new_signal_id()
@@ -98,10 +101,10 @@ Network::Network(const Network & obj)
 	this->configuration = obj.configuration;
 	this->current_step = obj.current_step;
 	this->signal_count = obj.signal_count;
-	for (auto it = this->edges.begin(); it != this->edges.end(); it++) {
+	for (auto it = obj.edges.begin(); it != obj.edges.end(); it++) {
 		this->edges[it->first] = Edge(it->second);
 	}
-	for (auto it = this->nodes.begin(); it != this->nodes.end(); it++) {
+	for (auto it = obj.nodes.begin(); it != obj.nodes.end(); it++) {
 		this->nodes[it->first] = Node(it->second);
 	}
 }
@@ -115,15 +118,46 @@ Network::~Network()
 
 }
 
+string Network::toString()
+{
+
+	std::stringstream ss;
+	
+	for (auto it = this->nodes.begin(); it != this->nodes.end(); it++) {
+		Node& n = it->second;
+		ss << "{N" << n.id << ", sigs=[";
+		for (int i = 0; i < n.activation_signals.size(); i++) {
+			ss << n.activation_signals[i].strength<<",";
+		}
+		ss << "], to=>[" ;
+		for (int i = 0; i < n.edges_out.size(); i++) {
+			ss << n.edges_out[i] <<",";
+		}
+		ss << "]}" << endl;
+	}
+
+	for (auto it = this->edges.begin(); it != edges.end(); it++) {
+		Edge& e = it->second;
+		ss << "{E" << e.id << ""<< ", sigs=[";
+		for (int i = 0; i < e.transmitting_signals.size(); i++) {
+			ss << e.transmitting_signals[i].strength << ",";
+		}
+		ss << "], to=>"<< e.node_out <<"]}" <<endl;
+
+	}
+
+	return ss.str();
+}
+
 
 vector<vector<double>> get_network_result_on_each_node(Network& network, int output_length, int output_step_count) {
 
 	vector<vector<double>> vec_outputs;
 	int output_n = network.configuration.output_n;
 	//for each output vector
+
 	for (int j = 0; j < output_length; j++) {
 		vector<double> output;
-
 		//for each output node
 		for (int i = 0; i < output_n; i++) {
 			int id = i + constants::offset_output_neuron_id;
@@ -146,7 +180,7 @@ vector<vector<double>> get_network_result_on_each_node(Network& network, int out
 	return vec_outputs;
 }
 
-bool wait_for_each_node(Network& network, int output_length, int output_step_count, int max_wait_step = 100) {
+bool wait_for_each_node(Network& network, int output_length, int output_step_count, int max_wait_step = 20) {
 	bool done = false;
 	int wait = 0;
 	while (!done && wait < max_wait_step) {
@@ -181,11 +215,12 @@ double evaluate_network_on_each_node(
 	}
 
 	//loop until each output nodes has enough output
-	wait_for_each_node(network, expect_outputs.size(), output_step_count, 100);
+	wait_for_each_node(network, expect_outputs.size(), output_step_count,20);
 
 	//when every nodes has enough valid activation result
 	vector<vector<double>> outputs = get_network_result_on_each_node(network, expect_outputs.size(), output_step_count);
 
+	std::cout << network.toString();
 	//calculate mean square error
 	double err = 0;
 	for (int i = 0; i < expect_outputs.size(); i++) {

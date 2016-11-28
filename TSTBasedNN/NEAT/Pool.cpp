@@ -103,6 +103,9 @@ void Pool::newGeneration()
 
 
 	cout << "Generation done: " << this->generation <<" max fit="<<max_fitness<<", shared="<<max_shared_fitness<< endl;
+	for (int i = 0; i < species.size(); i++) {
+		cout << i << ", " << species[i].genomes.size()<<endl;
+	}
 }
 
 Pool::Pool(const Pool & obj)
@@ -131,7 +134,7 @@ int Pool::genome_belong_to(Genome & genome)
 
 	for (int si = 0; si < species.size(); si++) {
 		//std::cout << si._Ptr <<","<< si->genomes.size() << std::endl;
-		int random_id = (int)(random()* species.size());
+		int random_id = (int)(random()* species[si].genomes.size());
 		Genome& president = species[si].genomes.at(random_id);
 		if (genome.isSameSpecies(president)) {
 			return si;

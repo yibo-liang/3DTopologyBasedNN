@@ -143,7 +143,7 @@ double Genome::dispositionCompare(Genome g1, Genome g2)
 	}
 	double sum = 0;
 	//double coincident = 0;
-	for (int i = 0; i < genes1.size();i++) {
+	for (int i = 0; i < genes1.size(); i++) {
 		TGene gene = genes1[i];
 		if (i2.count(gene.innovation) > 0) {
 			TGene gene2 = i2[gene.innovation];
@@ -158,14 +158,14 @@ double Genome::dispositionCompare(Genome g1, Genome g2)
 
 bool Genome::isSameSpecies(const Genome& another)
 {
-	double threshold = 1.0;
-	double disjoint = this->disjointCompare(*this, another);
-	double disposition = this->dispositionCompare(*this, another);
-	double weight = weightCompare(*this, another);
-	double sum = disjoint* this->configuration.disjoint_weight
-		+ disposition* this->configuration.disposition_weight
-		+ weight* this->configuration.dweight_weight;
-	cout << "disjoint:" << disjoint << ", dipos:" << disposition << ", weight:" << weight << endl;
+	double threshold = 1.5;
+	double disjoint = this->disjointCompare(*this, another) * this->configuration.disjoint_weight;
+	double disposition = this->dispositionCompare(*this, another) * this->configuration.disposition_weight;
+	double dweight = weightCompare(*this, another) * this->configuration.dweight_weight;
+	double sum = disjoint
+		+ disposition
+		+ dweight;
+	cout << "disjoint:" << disjoint << ", dipos:" << disposition << ", weight:" << dweight <<", sum="<<sum<< endl;
 	return (sum < threshold);
 }
 
@@ -364,6 +364,9 @@ Network Genome::toNeuralNetwork()
 		edge.node_in = this->l_genes[i].node_in;
 		edge.node_out = this->l_genes[i].node_out;
 		edge.length = distance(network.nodes[edge.node_in].position, network.nodes[edge.node_out].position);
+		if (edge.length == 0 && edge.node_in == edge.node_out) {
+			edge.length = constants::MIN_EDGE_LENGTH;
+		}
 		//assign edge_in edge_out for connected node of this edge
 		network.nodes[edge.node_in].edges_out.push_back(edge.id);
 		network.nodes[edge.node_out].edges_in.push_back(edge.id);
@@ -374,7 +377,7 @@ Network Genome::toNeuralNetwork()
 
 	network.configuration = Configuration(this->configuration);
 
-	return network;
+	return Network(network);
 }
 
 
