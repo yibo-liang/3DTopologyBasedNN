@@ -20,7 +20,7 @@ public:
 	double weight;
 
 	LGene(const LGene &obj);
-
+	string toString();
 	LGene();
 	~LGene();
 

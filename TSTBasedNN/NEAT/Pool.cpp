@@ -40,7 +40,8 @@ void Pool::newGeneration()
 	//selection + crossover
 	//mutation
 	//eliticism
-	cout << "Generation: " << this->generation << endl;
+	double max_fitness = 0;
+	double max_shared_fitness = 0;
 	double fit_sum = 0;
 	for (int sp_i = 0; sp_i < species.size(); sp_i++) {
 		Species& sp = species[sp_i];
@@ -49,6 +50,8 @@ void Pool::newGeneration()
 			g.network = g.toNeuralNetwork();
 			g.fitness = evaluate_network_on_each_node(g.network, inputs, outputs, DEFAULT_INPUT_STEP, DEFAULT_OUTPUT_STEP);
 			g.shared_fitness = g.fitness / (double)sp.genomes.size();
+			if (g.fitness > max_fitness) max_fitness = g.fitness;
+			if (g.shared_fitness > max_shared_fitness) max_shared_fitness = g.shared_fitness;
 		}
 		std::sort(sp.genomes.begin(), sp.genomes.end(), better_fitness());
 		fit_sum += sp.genomes[0].shared_fitness;
@@ -99,6 +102,7 @@ void Pool::newGeneration()
 	this->generation++;
 
 
+	cout << "Generation done: " << this->generation <<" max fit="<<max_fitness<<", shared="<<max_shared_fitness<< endl;
 }
 
 Pool::Pool(const Pool & obj)

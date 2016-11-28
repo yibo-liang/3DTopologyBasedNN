@@ -13,6 +13,12 @@ LGene::LGene(const LGene & obj)
 
 }
 
+string LGene::toString()
+{
+
+	return string();
+}
+
 LGene::LGene()
 {
 }

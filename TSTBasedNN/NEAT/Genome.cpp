@@ -94,16 +94,16 @@ double Genome::weightCompare(Genome g1, Genome g2)
 	for (auto it = genes2->begin(); it != genes2->end(); it++) {
 		i2[it->innovation] = *it;
 	}
-	double sum = 0;/*
-	double coincident = 0;
+	double sum = 0;
+	//double coincident = 0;
 	for (auto it = genes1->begin(); it != genes1->end(); it++) {
 		LGene gene1 = *it;
 		if (i2.count(it->innovation) > 0) {
 			LGene gene2 = i2[it->innovation];
 			sum = sum + abs(gene2.weight - gene1.weight);
-			coincident++;
+			//coincident++;
 		}
-	}*/
+	}
 	if (sum == 0) return 0;
 
 	double N = max(g1.l_genes.size(), g2.l_genes.size());
@@ -141,16 +141,16 @@ double Genome::dispositionCompare(Genome g1, Genome g2)
 	for (int i = 0; i < genes2.size(); i++) {
 		i2[genes2[i].innovation] = genes2[i];
 	}
-	double sum = 0;/*
-	double coincident = 0;
+	double sum = 0;
+	//double coincident = 0;
 	for (int i = 0; i < genes1.size();i++) {
 		TGene gene = genes1[i];
 		if (i2.count(gene.innovation) > 0) {
 			TGene gene2 = i2[gene.innovation];
 			sum += distance(gene.offset, gene2.offset);
-			coincident++;
+			//coincident++;
 		}
-	}*/
+	}
 	double N = max(g1.t_genes.size(), g2.t_genes.size());
 	if (sum == 0) return 0;
 	return sum / N;
@@ -229,7 +229,7 @@ void Genome::init()
 	map<int, bool> node_created;
 	//create tgene from preset tgene
 	for (auto it = this->configuration.preset.preset_t.begin();
-		it != this->configuration.preset.preset_t.end(); it++) {
+	it != this->configuration.preset.preset_t.end(); it++) {
 		TGene tg(it->second);
 		tg.innovation = inno_func();
 		node_created[it->second.id] = true;
@@ -241,7 +241,7 @@ void Genome::init()
 	}
 	//create tgene from preset lgene
 	for (auto it = this->configuration.preset.preset_l.begin();
-		it != this->configuration.preset.preset_l.end(); it++) {
+	it != this->configuration.preset.preset_l.end(); it++) {
 		LGene lg(*it);
 
 		//for node in of this lgene
@@ -318,7 +318,6 @@ void Genome::init()
 
 	//also add bias_number
 	this->bias_n = this->configuration.bias_n;
-	std::cout << "tgene:" << this->t_genes.size() << ", lgene:" << this->l_genes.size() << endl;
 }
 
 Network Genome::toNeuralNetwork()
@@ -332,12 +331,10 @@ Network Genome::toNeuralNetwork()
 			Node node;
 			node.id = t_genes[i].id;
 			node.position = this->t_genes[i].offset;
-			if (node.position.size() == 0) {
-				throw exception("");
-			}
 			node.type = this->t_genes[i].type;
 			network.nodes[node.id] = node;
 			expressed++;
+
 		}
 	}
 	//then add all node that is not expressed but of which base is expressed
@@ -347,6 +344,7 @@ Network Genome::toNeuralNetwork()
 		for (int i = 0; i < this->t_genes.size(); i++) {
 			int base_id = this->t_genes[i].base;
 			int id = this->t_genes[i].id;
+
 			if (network.nodes.count(base_id) > 0 && network.nodes.count(id) == 0) {
 				Node node;
 				//node 's position is calculated by adding its offset on base's position
@@ -370,6 +368,7 @@ Network Genome::toNeuralNetwork()
 		network.nodes[edge.node_in].edges_out.push_back(edge.id);
 		network.nodes[edge.node_out].edges_in.push_back(edge.id);
 		network.edges[edge.id] = edge;
+
 	}
 
 
@@ -391,7 +390,7 @@ int Genome::randomNeuron(bool inclInput, bool inclBias)
 bool Genome::containsLGene(const LGene & lgene)
 {
 	for (int i = 0; i < this->l_genes.size(); i++) {
-		if (this->l_genes[i].node_in = lgene.node_in &&  this->l_genes[i].node_out == lgene.node_out)
+		if (this->l_genes[i].node_in == lgene.node_in &&  this->l_genes[i].node_out == lgene.node_out)
 		{
 			return true;
 		}
@@ -462,7 +461,7 @@ void add_link_mutate(Genome& g) {
 
 
 	stringstream ss;
-	ss << "add_link_mutate(" << n1 << " - " << n2 << ")" << endl;
+	ss << "add_link_mutate(" << n1 << " - " << n2 << "), inno=" << new_lgene.innovation << endl;
 	g.mutation_record += ss.str();
 
 }
@@ -498,16 +497,8 @@ void add_node_mutate(Genome& g) {
 	}
 	tg.innovation = g.inno_func();
 	rand_gene.enabled = false;
-	TGene& out = g.get_tgene_by_id(rand_gene.node_out);
-	//copy offset and half both
-	for (int i = 0; i < out.offset.size(); i++) {
-		tg.offset.push_back(out.offset[i] / 2);
-		out.offset[i] = out.offset[i] / 2;
-	}
-	out.base = tg.id;
-	//change the innovation of the node that is going to base on our new node
-	out.innovation = g.inno_func();
-
+	tg.base = rand_gene.node_in;
+	tg.offset = randomVec(g.configuration.space_dimension);
 
 	LGene gene1(rand_gene);
 	gene1.node_out = tg.id;
@@ -524,7 +515,7 @@ void add_node_mutate(Genome& g) {
 	g.t_genes.push_back(tg);
 
 
-	ss << " >> (" << gene1.node_in << " <- " << gene1.node_out << " <- " << gene2.node_out << ")" << endl;
+	ss << " >> (" << gene1.node_in << " <- " << gene2.node_in << " <- " << gene2.node_out << ")" << ", tg_inno:" << tg.innovation << ", lg1_inno=" << gene1.innovation << "lg2_inno=" << gene2.innovation << endl;
 	g.mutation_record += ss.str();
 
 }
@@ -771,7 +762,10 @@ Genome fromCrossOver(const Genome& g1, const Genome& g2)
 	result_genome.bias_n = bias_n;
 	result_genome.hidden_n = hidden_n;
 
-
+	stringstream ss;
+	ss << "crossover([" << g1.t_genes.size() << "," << g1.l_genes.size() << "] + "
+		<< g2.t_genes.size() << "," << g2.l_genes.size() << "]" << ")" << endl;
+	result_genome.mutation_record += ss.str();
 
 	return result_genome;
 }

@@ -35,7 +35,7 @@ namespace constants {
 	}
 
 	static double random() {
-		double result= ((double)rand() / (RAND_MAX));
+		double result= ((double)(rand()/2) / (RAND_MAX/2+1));
 		//std::cout << result << std::endl;
 		return result;
 	}
