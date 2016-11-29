@@ -114,7 +114,7 @@ vector<double> randomVec(int dim) {
 	vector<double> result;
 	//random value -100 to 100 for each dimention of this vec
 	for (int i = 0; i < dim; i++) {
-		result.push_back(random() * 200 - 100);
+		result.push_back(random() * 20 - 10);
 	}
 	return (result);
 }
@@ -165,7 +165,7 @@ bool Genome::isSameSpecies(const Genome& another)
 	double sum = disjoint
 		+ disposition
 		+ dweight;
-	cout << "disjoint:" << disjoint << ", dipos:" << disposition << ", weight:" << dweight <<", sum="<<sum<< endl;
+	//cout << "disjoint:" << disjoint << ", dipos:" << disposition << ", weight:" << dweight <<", sum="<<sum<< endl;
 	return (sum < threshold);
 }
 
@@ -384,10 +384,24 @@ Network Genome::toNeuralNetwork()
 
 int Genome::randomNeuron(bool inclInput, bool inclBias)
 {
-	srand(time(NULL));
-	int count = t_genes.size();
-	int select = rand() % count;
-	return t_genes[select].id;
+	vector<int> candidates;
+
+	for (int i = 0; i < t_genes.size(); i++) {
+		TGene& tg= t_genes[i];
+		if (!inclInput && tg.type == INPUT_NEURON) {
+			continue;
+		}
+		if (!inclBias && tg.type == BIAS_NEURON) {
+			continue;
+		}
+		candidates.push_back(i);
+	}
+
+	int count = candidates.size();
+	if (count == 0) return -1;
+	int select = random()* count;
+
+	return t_genes[candidates[select]].id;
 }
 
 bool Genome::containsLGene(const LGene & lgene)
@@ -446,6 +460,7 @@ void add_link_mutate(Genome& g) {
 	int n1 = g.randomNeuron(true, g.configuration.bias_n > 0);
 	int n2 = g.randomNeuron(false, false);
 	if (n1 == n2 && !g.configuration.is_recurrent) return;
+	if (n1 == -1 || n2 == -1) return;
 	LGene new_lgene;
 	new_lgene.node_in = n1;
 	new_lgene.node_out = n2;

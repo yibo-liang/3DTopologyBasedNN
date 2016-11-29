@@ -50,7 +50,7 @@ Configuration::Configuration()
 	this->offset_output_neuron_id = 30000;
 	
 	this->probabilities["crossover"] = 0.7;
-	this->probabilities["mutation"] = 1;
+	this->probabilities["mutation"] = 0.3;
 	
 	this->probabilities["lpoint_mutate"] = 0.1; //mutate link's weight
 	this->probabilities["tpoint_mutate"] = 0.1; //bias weight
@@ -60,7 +60,7 @@ Configuration::Configuration()
 	this->probabilities["off_switch_link_mutate"] = 0.1; // disable or enable a link
 	this->probabilities["on_switch_link_mutate"] = 0.1; // disable or enable a link
 
-	this->probabilities["step"] = 0.05;
+	this->probabilities["step"] = 0.1;
 	//this->probabilities["offset_range"] = 0.02;
 	this->probabilities["w_purtubation"] = 0.98;//purtubation rate for weight
 
@@ -71,8 +71,8 @@ Configuration::Configuration()
 	this->is_recurrent = true;
 
 	this->initial_weight_range = 2.0;
-	this->disjoint_weight = 1.0 / 3.0;
-	this->disposition_weight = 1.0 / 30.0;
+	this->disjoint_weight = 1.0 / 2.0;
+	this->disposition_weight = 1.0 / 90.0;
 	this->dweight_weight =  50.0;
 }
 

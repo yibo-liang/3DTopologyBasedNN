@@ -43,8 +43,10 @@ void Pool::newGeneration()
 	double max_fitness = 0;
 	double max_shared_fitness = 0;
 	double fit_sum = 0;
+#pragma omp parallel
 	for (int sp_i = 0; sp_i < species.size(); sp_i++) {
 		Species& sp = species[sp_i];
+#pragma omp for schedule(dynamic,1)
 		for (int g_i = 0; g_i < sp.genomes.size(); g_i++) {
 			Genome& g = sp.genomes[g_i];
 			g.network = g.toNeuralNetwork();
@@ -53,6 +55,11 @@ void Pool::newGeneration()
 			if (g.fitness > max_fitness) max_fitness = g.fitness;
 			if (g.shared_fitness > max_shared_fitness) max_shared_fitness = g.shared_fitness;
 		}
+
+	}
+#pragma omp parallel for reduction(+:fit_sum)
+	for (int i = 0; i < species.size(); i++) {
+		Species& sp = species[i];
 		std::sort(sp.genomes.begin(), sp.genomes.end(), better_fitness());
 		fit_sum += sp.genomes[0].shared_fitness;
 	}

@@ -35,7 +35,10 @@ void Network::step()
 		if (!it->second.wake()) {
 			continue;
 		}
-
+		if (it->second.activation_signals.size() == 0 && it->second.type != constants::BIAS_NEURON) {
+			//if the node has no activation signal to signal then
+			continue;
+		}
 		double strength = it->second.activate(this->current_step);
 
 		for (int i = 0; i < it->second.edges_out.size(); i++) {
@@ -68,6 +71,8 @@ void Network::step()
 		}
 
 	}
+
+	//std::cout << this->toString();
 	this->current_step++;
 }
 
@@ -125,7 +130,7 @@ string Network::toString()
 	
 	for (auto it = this->nodes.begin(); it != this->nodes.end(); it++) {
 		Node& n = it->second;
-		ss << "{N" << n.id << ", sigs=[";
+		ss << "{N" << n.id << "("<< n.type <<"), sigs=[";
 		for (int i = 0; i < n.activation_signals.size(); i++) {
 			ss << n.activation_signals[i].strength<<",";
 		}
@@ -138,11 +143,11 @@ string Network::toString()
 
 	for (auto it = this->edges.begin(); it != edges.end(); it++) {
 		Edge& e = it->second;
-		ss << "{E" << e.id << ""<< ", sigs=[";
+		ss << "{E" << e.id << ", L="<< e.length << ", sigs=[";
 		for (int i = 0; i < e.transmitting_signals.size(); i++) {
 			ss << e.transmitting_signals[i].strength << ",";
 		}
-		ss << "], to=>"<< e.node_out <<"]}" <<endl;
+		ss << "], ["<< e.node_in <<"=>"<< e.node_out <<"]}" <<endl;
 
 	}
 
@@ -188,7 +193,11 @@ bool wait_for_each_node(Network& network, int output_length, int output_step_cou
 		done = true;
 		for (int i = 0; i < output_n; i++) {
 			int id = i + constants::offset_output_neuron_id;
-			done = done && network.nodes[id].activation_results.size()>(output_length*output_step_count);
+			if (network.nodes[id].activation_results.size()<(output_length*output_step_count)) {
+				done = false;
+				break;
+			}
+
 		}
 		network.step();
 		wait++;
@@ -204,7 +213,7 @@ double evaluate_network_on_each_node(
 	int input_step_count, //how many time steps each input  vector is repeated 
 	int output_step_count //how many time steps each output vector is expected
 	) {
-
+	//cout << network.toString();
 	int input_length = inputs.size(); //quantity of input vectors
 
 	for (int i = 0; i < input_length; i++) {
@@ -220,7 +229,6 @@ double evaluate_network_on_each_node(
 	//when every nodes has enough valid activation result
 	vector<vector<double>> outputs = get_network_result_on_each_node(network, expect_outputs.size(), output_step_count);
 
-	std::cout << network.toString();
 	//calculate mean square error
 	double err = 0;
 	for (int i = 0; i < expect_outputs.size(); i++) {
@@ -231,5 +239,7 @@ double evaluate_network_on_each_node(
 	}
 	err = err / (expect_outputs.size()* network.configuration.output_n);
 
-	return err;
+	double fitness = (1 / (1 + err)) * 1000;
+
+	return fitness;
 };

@@ -49,15 +49,18 @@ double Node::activate(int step)
 			result = this->activation_signals[0].strength;
 		else
 			result = 0;
-		this->activation_signals.clear();
+		//this->activation_signals.clear();
 	}
 	else if (this->type == BIAS_NEURON) {
 		result = 1;
 	}
 	else if (this->type == OUTPUT_NEURON || this->type == HIDDEN_NEURON) {
-		result = this->activation(this->activation_signals);
-		
-		
+		if (this->activation_signals.size() > 0) {
+			result = this->activation(this->activation_signals);
+		}
+		else {
+			return 0;
+		}
 	}
 	for (int i = 0; i < this->activation_signals.size(); i++) {
 		activation_signals[i].age++;
@@ -108,6 +111,9 @@ void Node::add_signal(Signal sig)
 		if (this->activation_signals.size() > 0) {
 			this->activation_signals[0] = (sig);
 		}
+		else {
+			this->activation_signals.push_back(sig);
+		}
 	}
 	else if (this->type == BIAS_NEURON) {
 		return;
@@ -122,9 +128,9 @@ void Node::add_signal(Signal sig)
 Node::Node(const Node & obj)
 {
 	this->activation = obj.activation;
-	this->edges_in = obj.edges_in;
-	this->edges_out = obj.edges_in;
-	this->activation_signals = obj.activation_signals;
+	this->edges_in = vector<int>(obj.edges_in);
+	this->edges_out = vector<int>(obj.edges_out);
+	this->activation_signals = vector<Signal>(obj.activation_signals);
 	this->id = obj.id;
 	this->position = vector<double>(obj.position);
 	this->type = obj.type;

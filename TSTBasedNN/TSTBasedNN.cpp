@@ -19,7 +19,7 @@ int main()
 	preset.add_t_gene(0, -1, INPUT_NEURON, v1);
 	preset.add_t_gene(0, -1, OUTPUT_NEURON, v1);
 	Configuration config;
-	config.pool_population = 1;
+	config.pool_population = 60;
 	config.load_preset(preset);
 	double PI = 3.141592653589793;
 	Pool pool;
@@ -34,6 +34,7 @@ int main()
 		inputs_wrap.push_back(inputs);
 		outputs_wrap.push_back(outputs);
 	}
+	pool.configuration = config;
 	pool.set_inputs(inputs_wrap);
 	pool.set_outputs(outputs_wrap);
 
